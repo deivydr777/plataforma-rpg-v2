@@ -13,4 +13,4 @@ services:
       - key: JWT_SECRET
         value: "super_segredo_do_rpg_aqui_12345XYZABC"
       - key: OPENAI_API_KEY
-        value: "" # Deixado em branco por enquanto
+        value: ""
