@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+limport React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { Routes, Route, useNavigate, Navigate, Link } from 'react-router-dom';
 
@@ -120,7 +120,6 @@ function App() {
 
   return (
     <AppLayout className="AppLayout">
-      {/* MobileHeader AGORA TEM SUAS DEFINIÇÕES DE ESTILO AQUI MESMO */}
       {(isAuthenticated || window.location.pathname === '/login' || window.location.pathname === '/register') && (
         <MobileHeader className="MobileHeader">
           <MenuButton onClick={() => setShowCommunitiesSidebar(!showCommunitiesSidebar)}>
@@ -158,7 +157,7 @@ function App() {
             </SidebarHeader>
             {activeCommunity && communitiesData.find(c => c.id === activeCommunity)?.channels && (
               <>
-                <ChannelCategory>CANAIS DE TEXTO</ChannelCategory>
+                <ChannelCategory>CANAIS DE TEXTO</ChannelCategory> {/* <--- ESTA LINHA ESTÁ CORRETA AGORA! */}
                 {communitiesData.find(c => c.id === activeCommunity).channels.filter(c => c.type === 'text').map(channel => (
                   <ChannelItem
                     key={channel.id}
@@ -168,7 +167,7 @@ function App() {
                     #{channel.name}
                   </ChannelItem>
                 ))}
-                <ChannelCategory>CANAIS DE VOZ</Category>
+                <ChannelCategory>CANAIS DE VOZ</ChannelCategory> {/* <--- ESTA LINHA TAMBÉM ESTÁ CORRETA! */}
                 {communitiesData.find(c => c.id === activeCommunity).channels.filter(c => c.type === 'voice').map(channel => (
                   <ChannelItem
                     key={channel.id}
@@ -225,8 +224,8 @@ function App() {
 const AppLayout = styled.div`
   display: flex;
   height: 100vh;
-  background-color: #36393f; /* Corrigido para valor real */
-  color: #dcddde; /* Corrigido para valor real */
+  background-color: #36393f; 
+  color: #dcddde; 
 
   @media (max-width: 768px) {
     flex-direction: column;
@@ -244,7 +243,7 @@ const AppLogo = styled.div`
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background-color: #5865f2; /* Corrigido para valor real */
+  background-color: #5865f2; 
   display: flex;
   justify-content: center;
   align-items: center;
@@ -296,7 +295,7 @@ const ChannelsSidebar = styled(Sidebar)`
 
 const SidebarHeader = styled.h3`
   font-size: 0.7em;
-  color: #99aab5; /* Corrigido para valor real */
+  color: #99aab5; 
   margin-bottom: 15px;
   margin-top: 10px;
   text-align: center;
@@ -311,7 +310,7 @@ const CommunityItem = styled.div`
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background-color: #3a3c42; /* Corrigido para valor real */
+  background-color: #3a3c42; 
   display: flex;
   justify-content: center;
   align-items: center;
@@ -321,7 +320,7 @@ const CommunityItem = styled.div`
 
   &:hover {
     border-radius: 30%;
-    background-color: #5865f2; /* Corrigido para valor real */
+    background-color: #5865f2; 
   }
   ${props => props.active && `
     border-radius: 30%;
@@ -331,7 +330,7 @@ const CommunityItem = styled.div`
 
 const ChannelCategory = styled.div`
   font-size: 0.8em;
-  color: #8e9297; /* Corrigido para valor real */
+  color: #8e9297; 
   margin-top: 15px;
   margin-bottom: 5px;
   text-transform: uppercase;
@@ -345,14 +344,14 @@ const ChannelItem = styled.div`
   cursor: pointer;
   transition: background-color 0.2s, color 0.2s;
   font-size: 1.1em;
-  color: #8e9297; /* Corrigido para valor real */
+  color: #8e9297; 
 
   &:hover {
-    background-color: #3a3c42; /* Corrigido para valor real */
-    color: #dcddde; /* Corrigido para valor real */
+    background-color: #3a3c42; 
+    color: #dcddde; 
   }
   ${props => props.active && `
-    background-color: #40444b; /* Corrigido para valor real */
+    background-color: #40444b; 
     color: #ffffff;
   `}
 `;
@@ -361,7 +360,7 @@ const ContentArea = styled.div`
   flex-grow: 1; 
   display: flex;
   flex-direction: column;
-  background-color: #36393f; /* Corrigido para valor real */
+  background-color: #36393f; 
 
   @media (max-width: 768px) {
     width: 100%;
@@ -376,8 +375,8 @@ const MobileHeader = styled.div`
     justify-content: space-between;
     align-items: center;
     padding: 0 10px;
-    background-color: #202225;
-    color: #dcddde;
+    background-color: #202225; 
+    color: #dcddde; 
     height: 48px;
     flex-shrink: 0;
     width: 100%;
@@ -389,7 +388,7 @@ const MobileHeader = styled.div`
 const MobileTitle = styled.h2`
   font-size: 1.1em;
   margin: 0;
-  color: #dcddde;
+  color: #dcddde; 
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -399,7 +398,7 @@ const MobileTitle = styled.h2`
 const MenuButton = styled.button`
   background: none;
   border: none;
-  color: #dcddde;
+  color: #dcddde; 
   font-size: 1.5em;
   cursor: pointer;
   padding: 5px;
