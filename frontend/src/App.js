@@ -7,9 +7,9 @@ import Home from './Home';
 import ChatCommunity from './ChatCommunity'; 
 import ChatGlobal from './ChatGlobal';       
 
-// Importa os componentes de Autenticação (ESTAS SÃO AS LINHAS CRÍTICAS)
-import Login from './components/Login';     // <-- CUIDADO AQUI!
-import Register from './components/Register'; // <-- E AQUI!
+// Importa os componentes de Autenticação
+import Login from './components/Login';     
+import Register from './components/Register'; 
 
 // --- Configuração da Conexão com o Backend (Será o URL do Render) ---
 const SOCKET_SERVER_URL = "https://plataforma-rpg.onrender.com"; // <-- SEU URL REAL AQUI!
@@ -120,6 +120,7 @@ function App() {
 
   return (
     <AppLayout className="AppLayout">
+      {/* MobileHeader AGORA TEM SUAS DEFINIÇÕES DE ESTILO AQUI MESMO */}
       {(isAuthenticated || window.location.pathname === '/login' || window.location.pathname === '/register') && (
         <MobileHeader className="MobileHeader">
           <MenuButton onClick={() => setShowCommunitiesSidebar(!showCommunitiesSidebar)}>
@@ -167,7 +168,7 @@ function App() {
                     #{channel.name}
                   </ChannelItem>
                 ))}
-                <ChannelCategory>CANAIS DE VOZ</ChannelCategory>
+                <ChannelCategory>CANAIS DE VOZ</Category>
                 {communitiesData.find(c => c.id === activeCommunity).channels.filter(c => c.type === 'voice').map(channel => (
                   <ChannelItem
                     key={channel.id}
@@ -219,11 +220,13 @@ function App() {
   );
 }
 
+// --- Estilos Usando Styled Components ---
+
 const AppLayout = styled.div`
   display: flex;
   height: 100vh;
-  background-color: var(--primary-dark);
-  color: var(--text-light);
+  background-color: #36393f; /* Corrigido para valor real */
+  color: #dcddde; /* Corrigido para valor real */
 
   @media (max-width: 768px) {
     flex-direction: column;
@@ -241,7 +244,7 @@ const AppLogo = styled.div`
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background-color: var(--accent-blue);
+  background-color: #5865f2; /* Corrigido para valor real */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -293,7 +296,7 @@ const ChannelsSidebar = styled(Sidebar)`
 
 const SidebarHeader = styled.h3`
   font-size: 0.7em;
-  color: var(--text-muted);
+  color: #99aab5; /* Corrigido para valor real */
   margin-bottom: 15px;
   margin-top: 10px;
   text-align: center;
@@ -308,7 +311,7 @@ const CommunityItem = styled.div`
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background-color: var(--secondary-dark);
+  background-color: #3a3c42; /* Corrigido para valor real */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -318,17 +321,17 @@ const CommunityItem = styled.div`
 
   &:hover {
     border-radius: 30%;
-    background-color: var(--accent-blue);
+    background-color: #5865f2; /* Corrigido para valor real */
   }
   ${props => props.active && `
     border-radius: 30%;
-    background-color: var(--accent-blue);
+    background-color: #5865f2;
   `}
 `;
 
 const ChannelCategory = styled.div`
   font-size: 0.8em;
-  color: var(--text-muted);
+  color: #8e9297; /* Corrigido para valor real */
   margin-top: 15px;
   margin-bottom: 5px;
   text-transform: uppercase;
@@ -342,15 +345,15 @@ const ChannelItem = styled.div`
   cursor: pointer;
   transition: background-color 0.2s, color 0.2s;
   font-size: 1.1em;
-  color: var(--text-muted);
+  color: #8e9297; /* Corrigido para valor real */
 
   &:hover {
-    background-color: var(--secondary-dark);
-    color: var(--text-light);
+    background-color: #3a3c42; /* Corrigido para valor real */
+    color: #dcddde; /* Corrigido para valor real */
   }
   ${props => props.active && `
-    background-color: var(--secondary-dark);
-    color: var(--text-light);
+    background-color: #40444b; /* Corrigido para valor real */
+    color: #ffffff;
   `}
 `;
 
@@ -358,11 +361,48 @@ const ContentArea = styled.div`
   flex-grow: 1; 
   display: flex;
   flex-direction: column;
-  background-color: var(--primary-dark); 
+  background-color: #36393f; /* Corrigido para valor real */
 
   @media (max-width: 768px) {
     width: 100%;
   }
+`;
+
+// Estilos para MobileHeader e MenuButton (agora definidos aqui)
+const MobileHeader = styled.div`
+  display: none; 
+  @media (max-width: 768px) { 
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 10px;
+    background-color: #202225;
+    color: #dcddde;
+    height: 48px;
+    flex-shrink: 0;
+    width: 100%;
+    position: relative; 
+    z-index: 50; 
+  }
+`;
+
+const MobileTitle = styled.h2`
+  font-size: 1.1em;
+  margin: 0;
+  color: #dcddde;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: calc(100% - 100px);
+`;
+
+const MenuButton = styled.button`
+  background: none;
+  border: none;
+  color: #dcddde;
+  font-size: 1.5em;
+  cursor: pointer;
+  padding: 5px;
 `;
 
 export default App;
