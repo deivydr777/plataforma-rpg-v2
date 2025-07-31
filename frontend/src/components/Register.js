@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+limport React, { useState } from 'react';
 import styled from 'styled-components';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -10,6 +10,7 @@ function Register({ onRegisterSuccess }) {
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
 
+  // EXTREMAMENTE IMPORTANTE: SUBSTITUA COM O URL REAL DO SEU BACKEND NO RENDER!
   const BACKEND_URL = "https://plataforma-rpg.onrender.com"; // <-- SEU URL REAL AQUI!
 
   const handleSubmit = async (e) => {
@@ -20,6 +21,8 @@ function Register({ onRegisterSuccess }) {
       return;
     }
 
+    let currentResponse = null; // Variável para armazenar a resposta da requisição
+
     try {
       const response = await fetch(`${BACKEND_URL}/api/auth/register`, {
         method: 'POST',
@@ -28,10 +31,11 @@ function Register({ onRegisterSuccess }) {
         },
         body: JSON.stringify({ nome: name, email, senha: password }),
       });
+      currentResponse = response; // Armazena a resposta aqui
 
       const data = await response.json();
 
-      if (response.ok) {
+      if (currentResponse.ok) { // Usa currentResponse.ok aqui
         localStorage.setItem('token', data.token);
         setMessage('Registro bem-sucedido! Redirecionando...');
         console.log('Registro bem-sucedido. Token:', data.token);
@@ -84,7 +88,7 @@ function Register({ onRegisterSuccess }) {
           />
           <Button type="submit">Registrar</Button>
         </Form>
-        {message && <MessageText error={!response?.ok}>{message}</MessageText>}
+        {message && <MessageText error={!currentResponse?.ok}>{message}</MessageText>} {/* Usa currentResponse.ok aqui */}
         <LinkText>
           Já tem uma conta? <Link to="/login">Faça login aqui</Link>
         </LinkText>
@@ -98,13 +102,13 @@ const AuthContainer = styled.div`
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background-color: #2f3136; /* Corrigido para valor real */
-  color: #dcddde; /* Corrigido para valor real */
+  background-color: #2f3136; 
+  color: #dcddde; 
   font-family: 'Roboto', sans-serif;
 `;
 
 const AuthBox = styled.div`
-  background-color: #36393f; /* Corrigido para valor real */
+  background-color: #36393f; 
   padding: 40px;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
@@ -127,15 +131,15 @@ const Form = styled.form`
 
 const Input = styled.input`
   padding: 12px 15px;
-  border: 1px solid #40444b; /* Corrigido para valor real */
+  border: 1px solid #40444b; 
   border-radius: 4px;
-  background-color: #40444b; /* Corrigido para valor real */
-  color: #dcddde; /* Corrigido para valor real */
+  background-color: #40444b; 
+  color: #dcddde; 
   font-size: 1em;
   &:focus {
     outline: none;
-    border-color: #5865f2; /* Corrigido para valor real */
-    box-shadow: 0 0 0 2px #5865f2; /* Corrigido para valor real */
+    border-color: #5865f2; 
+    box-shadow: 0 0 0 2px #5865f2; 
   }
 `;
 
@@ -143,13 +147,13 @@ const Button = styled.button`
   padding: 12px 20px;
   border: none;
   border-radius: 4px;
-  background-color: #5865f2; /* Corrigido para valor real */
+  background-color: #5865f2; 
   color: white;
   font-size: 1.1em;
   cursor: pointer;
   transition: background-color 0.2s ease-in-out;
   &:hover {
-    background-color: #4752c4; /* Corrigido para valor real */
+    background-color: #4752c4; 
   }
 `;
 
@@ -163,7 +167,7 @@ const LinkText = styled.p`
   margin-top: 20px;
   font-size: 0.9em;
   a {
-    color: #5865f2; /* Corrigido para valor real */
+    color: #5865f2; 
     text-decoration: none;
     &:hover {
       text-decoration: underline;
