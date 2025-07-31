@@ -1,4 +1,4 @@
-limport React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { Routes, Route, useNavigate, Navigate, Link } from 'react-router-dom';
 
@@ -157,7 +157,7 @@ function App() {
             </SidebarHeader>
             {activeCommunity && communitiesData.find(c => c.id === activeCommunity)?.channels && (
               <>
-                <ChannelCategory>CANAIS DE TEXTO</ChannelCategory> {/* <--- ESTA LINHA ESTÁ CORRETA AGORA! */}
+                <ChannelCategory>CANAIS DE TEXTO</ChannelCategory> 
                 {communitiesData.find(c => c.id === activeCommunity).channels.filter(c => c.type === 'text').map(channel => (
                   <ChannelItem
                     key={channel.id}
@@ -167,7 +167,7 @@ function App() {
                     #{channel.name}
                   </ChannelItem>
                 ))}
-                <ChannelCategory>CANAIS DE VOZ</ChannelCategory> {/* <--- ESTA LINHA TAMBÉM ESTÁ CORRETA! */}
+                <ChannelCategory>CANAIS DE VOZ</ChannelCategory> 
                 {communitiesData.find(c => c.id === activeCommunity).channels.filter(c => c.type === 'voice').map(channel => (
                   <ChannelItem
                     key={channel.id}
