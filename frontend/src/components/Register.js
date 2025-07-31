@@ -145,33 +145,4 @@ const Input = styled.input`
 const Button = styled.button`
   padding: 12px 20px;
   border: none;
-  border-radius: 4px;
-  background-color: #5865f2; 
-  color: white;
-  font-size: 1.1em;
-  cursor: pointer;
-  transition: background-color 0.2s ease-in-out;
-  &:hover {
-    background-color: #4752c4; 
-  }
-`;
-
-const MessageText = styled.p`
-  margin-top: 20px;
-  font-size: 0.9em;
-  color: ${props => props.error ? '#ff5555' : '#55ff55'};
-`;
-
-const LinkText = styled.p`
-  margin-top: 20px;
-  font-size: 0.9em;
-  a {
-    color: #5865f2; 
-    text-decoration: none;
-    &:hover {
-      text-decoration: underline;
-    }
-  }
-`;
-
-export default Register;
+  border-radius: 4px
