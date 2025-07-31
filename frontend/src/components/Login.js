@@ -7,14 +7,13 @@ function Login({ onLoginSuccess }) {
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
+  let currentResponseRef = useRef(null); // USAR useRef para manter a referência da resposta
 
   // EXTREMAMENTE IMPORTANTE: SUBSTITUA COM O URL REAL DO SEU BACKEND NO RENDER!
   const BACKEND_URL = "https://plataforma-rpg.onrender.com"; // <-- SEU URL REAL AQUI!
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    let currentResponse = null; // Variável para armazenar a resposta da requisição
 
     try {
       const response = await fetch(`${BACKEND_URL}/api/auth/login`, {
@@ -24,11 +23,11 @@ function Login({ onLoginSuccess }) {
         },
         body: JSON.stringify({ email, senha: password }),
       });
-      currentResponse = response; // Armazena a resposta aqui
+      currentResponseRef.current = response; // Atribui a resposta ao ref
 
       const data = await response.json();
 
-      if (currentResponse.ok) { // Usa currentResponse.ok aqui
+      if (currentResponseRef.current.ok) { // Usa currentResponseRef.current.ok
         localStorage.setItem('token', data.token);
         setMessage('Login bem-sucedido! Redirecionando...');
         console.log('Login bem-sucedido. Token:', data.token);
@@ -67,7 +66,7 @@ function Login({ onLoginSuccess }) {
           />
           <Button type="submit">Entrar</Button>
         </Form>
-        {message && <MessageText error={!currentResponse?.ok}>{message}</MessageText>} {/* Usa currentResponse.ok aqui */}
+        {message && <MessageText error={!currentResponseRef.current?.ok}>{message}</MessageText>} {/* Usa currentResponseRef.current?.ok */}
         <LinkText>
           Não tem uma conta? <Link to="/register">Registre-se aqui</Link>
         </LinkText>
