@@ -2,19 +2,14 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { Routes, Route, useNavigate, Navigate, Link } from 'react-router-dom';
 
-// Importa os componentes principais
 import Home from './Home';
 import ChatCommunity from './ChatCommunity'; 
 import ChatGlobal from './ChatGlobal';       
-
-// Importa os componentes de Autenticação
 import Login from './components/Login';     
 import Register from './components/Register'; 
 
-// --- Configuração da Conexão com o Backend (Será o URL do Render) ---
-const SOCKET_SERVER_URL = "https://plataforma-rpg.onrender.com"; // <-- SEU URL REAL AQUI!
+const SOCKET_SERVER_URL = "https://plataforma-rpg-v2.onrender.com"; // <-- SEU URL REAL AQUI!
 
-// --- DADOS DO USUÁRIO ATUAL (MOCK - SIMULADO) ---
 const currentUser = {
   id: 'user123',
   name: 'Aventureiro Destemido',
@@ -22,7 +17,6 @@ const currentUser = {
   roles: ['Jogador'],
 };
 
-// Dados de exemplo (mock Data) para as comunidades
 const communitiesData = [
   { id: 'global', name: 'Chat Global', icon: '🌍' },
   { id: 'hogwarts', name: 'Hogwarts RPG', icon: '🧙‍♂️', channels: [
@@ -43,9 +37,8 @@ function App() {
   const [activeChannel, setActiveChannel] = useState(null);
   const [showCommunitiesSidebar, setShowCommunitiesSidebar] = useState(false);
   const [showChannelsSidebar, setShowChannelsSidebar] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false); // Estado de autenticação
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  // Verifica se o usuário está autenticado ao carregar a página
   useEffect(() => {
     const token = localStorage.getItem('token');
     setIsAuthenticated(!!token);
@@ -367,7 +360,6 @@ const ContentArea = styled.div`
   }
 `;
 
-// Estilos para MobileHeader e MenuButton (agora definidos aqui)
 const MobileHeader = styled.div`
   display: none; 
   @media (max-width: 768px) { 
