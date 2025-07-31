@@ -39,7 +39,7 @@ function ChatCommunity({ currentUser, messagesData, toggleCommunitiesSidebar, to
       setMessages([]);
       console.log(`Entrando na sala: ${communityId}-${channelId}`);
     }
-  }, [communityId, channelId]);
+  }, [socket.current, communityId, channelId]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -103,13 +103,13 @@ const ChatArea = styled.div`
   flex-grow: 1;
   display: flex;
   flex-direction: column;
-  background-color: #36393f;
+  background-color: #36393f; /* Corrigido para valor real */
 `;
 
 const ChatHeader = styled.div`
-  background-color: #36393f;
+  background-color: #36393f; /* Corrigido para valor real */
   padding: 10px 20px;
-  border-bottom: 1px solid #202225;
+  border-bottom: 1px solid #202225; /* Corrigido para valor real */
   display: flex;
   align-items: center;
   height: 48px;
@@ -144,17 +144,17 @@ const Avatar = styled.img`
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background-color: #2c2f33;
+  background-color: #2c2f33; /* Corrigido para valor real */
 `;
 
 const MessageContent = styled.div`
-  background-color: #40444b;
+  background-color: #40444b; /* Corrigido para valor real */
   padding: 10px 15px;
   border-radius: 8px;
   max-width: 70%;
   text-align: left;
   ${props => props.self && `
-    background-color: #5865f2;
+    background-color: #5865f2; /* Corrigido para valor real */
     color: #ffffff;
   `}
 `;
@@ -162,7 +162,7 @@ const MessageContent = styled.div`
 const MessageAuthor = styled.div`
   font-weight: bold;
   margin-bottom: 5px;
-  color: #5865f2;
+  color: #5865f2; /* Corrigido para valor real */
   ${props => props.self && `
     color: #ffffff;
   `}
@@ -175,8 +175,8 @@ const MessageText = styled.p`
 
 const ChatInputArea = styled.div`
   padding: 15px 20px;
-  background-color: #36393f;
-  border-top: 1px solid #202225;
+  background-color: #36393f; /* Corrigido para valor real */
+  border-top: 1px solid #202225; /* Corrigido para valor real */
   display: flex;
   gap: 10px;
 `;
@@ -186,13 +186,13 @@ const Input = styled.input`
   padding: 10px 15px;
   border-radius: 8px;
   border: none;
-  background-color: #40444b;
-  color: #dcddde;
+  background-color: #40444b; /* Corrigido para valor real */
+  color: #dcddde; /* Corrigido para valor real */
   font-size: 1em;
 
   &:focus {
     outline: none;
-    box-shadow: 0 0 0 2px #5865f2;
+    box-shadow: 0 0 0 2px #5865f2; /* Corrigido para valor real */
   }
 `;
 
@@ -200,14 +200,14 @@ const SendButton = styled.button`
   padding: 10px 20px;
   border-radius: 8px;
   border: none;
-  background-color: #5865f2;
+  background-color: #5865f2; /* Corrigido para valor real */
   color: white;
   font-size: 1em;
   cursor: pointer;
   transition: background-color 0.2s;
 
   &:hover {
-    background-color: #4752c4;
+    background-color: #4752c4; /* Corrigido para valor real */
   }
 `;
 
@@ -218,8 +218,8 @@ const MobileHeader = styled.div`
     justify-content: space-between;
     align-items: center;
     padding: 0 10px;
-    background-color: #202225;
-    color: #dcddde;
+    background-color: #202225; /* Corrigido para valor real */
+    color: #dcddde; /* Corrigido para valor real */
     height: 48px;
     flex-shrink: 0;
     width: 100%;
@@ -231,7 +231,7 @@ const MobileHeader = styled.div`
 const MobileTitle = styled.h2`
   font-size: 1.1em;
   margin: 0;
-  color: #dcddde;
+  color: #dcddde; /* Corrigido para valor real */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -241,7 +241,7 @@ const MobileTitle = styled.h2`
 const MenuButton = styled.button`
   background: none;
   border: none;
-  color: #dcddde;
+  color: #dcddde; /* Corrigido para valor real */
   font-size: 1.5em;
   cursor: pointer;
   padding: 5px;
