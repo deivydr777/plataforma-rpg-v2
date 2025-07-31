@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'; // Adicionado useRef
+import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -7,10 +7,9 @@ function Login({ onLoginSuccess }) {
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
-  let currentResponseRef = useRef(null); // USAR useRef para manter a referência da resposta
+  const currentResponseRef = useRef(null); 
 
-  // EXTREMAMENTE IMPORTANTE: SUBSTITUA COM O URL REAL DO SEU BACKEND NO RENDER!
-  const BACKEND_URL = "https://plataforma-rpg.onrender.com"; // <-- SEU URL REAL AQUI!
+  const BACKEND_URL = "https://plataforma-rpg-v2.onrender.com"; // <-- SEU URL REAL AQUI!
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -23,11 +22,11 @@ function Login({ onLoginSuccess }) {
         },
         body: JSON.stringify({ email, senha: password }),
       });
-      currentResponseRef.current = response; // Atribui a resposta ao ref
+      currentResponseRef.current = response; 
 
       const data = await response.json();
 
-      if (currentResponseRef.current.ok) { // Usa currentResponseRef.current.ok
+      if (currentResponseRef.current.ok) { 
         localStorage.setItem('token', data.token);
         setMessage('Login bem-sucedido! Redirecionando...');
         console.log('Login bem-sucedido. Token:', data.token);
@@ -66,7 +65,7 @@ function Login({ onLoginSuccess }) {
           />
           <Button type="submit">Entrar</Button>
         </Form>
-        {message && <MessageText error={!currentResponseRef.current?.ok}>{message}</MessageText>} {/* Usa currentResponseRef.current?.ok */}
+        {message && <MessageText error={!currentResponseRef.current?.ok}>{message}</MessageText>} 
         <LinkText>
           Não tem uma conta? <Link to="/register">Registre-se aqui</Link>
         </LinkText>
