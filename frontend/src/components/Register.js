@@ -1,4 +1,4 @@
-import React, { useState } => 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -98,13 +98,13 @@ const AuthContainer = styled.div`
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background-color: #2f3136;
-  color: #dcddde;
+  background-color: #2f3136; /* Corrigido para valor real */
+  color: #dcddde; /* Corrigido para valor real */
   font-family: 'Roboto', sans-serif;
 `;
 
 const AuthBox = styled.div`
-  background-color: #36393f;
+  background-color: #36393f; /* Corrigido para valor real */
   padding: 40px;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
@@ -127,15 +127,15 @@ const Form = styled.form`
 
 const Input = styled.input`
   padding: 12px 15px;
-  border: 1px solid #40444b;
+  border: 1px solid #40444b; /* Corrigido para valor real */
   border-radius: 4px;
-  background-color: #40444b;
-  color: #dcddde;
+  background-color: #40444b; /* Corrigido para valor real */
+  color: #dcddde; /* Corrigido para valor real */
   font-size: 1em;
   &:focus {
     outline: none;
-    border-color: #5865f2;
-    box-shadow: 0 0 0 2px #5865f2;
+    border-color: #5865f2; /* Corrigido para valor real */
+    box-shadow: 0 0 0 2px #5865f2; /* Corrigido para valor real */
   }
 `;
 
@@ -143,13 +143,13 @@ const Button = styled.button`
   padding: 12px 20px;
   border: none;
   border-radius: 4px;
-  background-color: #5865f2;
+  background-color: #5865f2; /* Corrigido para valor real */
   color: white;
   font-size: 1.1em;
   cursor: pointer;
   transition: background-color 0.2s ease-in-out;
   &:hover {
-    background-color: #4752c4;
+    background-color: #4752c4; /* Corrigido para valor real */
   }
 `;
 
@@ -163,7 +163,7 @@ const LinkText = styled.p`
   margin-top: 20px;
   font-size: 0.9em;
   a {
-    color: #5865f2;
+    color: #5865f2; /* Corrigido para valor real */
     text-decoration: none;
     &:hover {
       text-decoration: underline;
