@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react'; // Adicionado useRef
 import styled from 'styled-components';
 import { Link, useNavigate } from 'react-router-dom';
 
