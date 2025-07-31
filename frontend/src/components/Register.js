@@ -1,4 +1,4 @@
-limport React, { useState } from 'react';
+import React, { useState, useRef } from 'react'; // Adicionado useRef
 import styled from 'styled-components';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -9,6 +9,7 @@ function Register({ onRegisterSuccess }) {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
+  let currentResponseRef = useRef(null); // USAR useRef para manter a referência da resposta
 
   // EXTREMAMENTE IMPORTANTE: SUBSTITUA COM O URL REAL DO SEU BACKEND NO RENDER!
   const BACKEND_URL = "https://plataforma-rpg.onrender.com"; // <-- SEU URL REAL AQUI!
@@ -21,8 +22,6 @@ function Register({ onRegisterSuccess }) {
       return;
     }
 
-    let currentResponse = null; // Variável para armazenar a resposta da requisição
-
     try {
       const response = await fetch(`${BACKEND_URL}/api/auth/register`, {
         method: 'POST',
@@ -31,11 +30,11 @@ function Register({ onRegisterSuccess }) {
         },
         body: JSON.stringify({ nome: name, email, senha: password }),
       });
-      currentResponse = response; // Armazena a resposta aqui
+      currentResponseRef.current = response; // Atribui a resposta ao ref
 
       const data = await response.json();
 
-      if (currentResponse.ok) { // Usa currentResponse.ok aqui
+      if (currentResponseRef.current.ok) { // Usa currentResponseRef.current.ok
         localStorage.setItem('token', data.token);
         setMessage('Registro bem-sucedido! Redirecionando...');
         console.log('Registro bem-sucedido. Token:', data.token);
@@ -88,7 +87,7 @@ function Register({ onRegisterSuccess }) {
           />
           <Button type="submit">Registrar</Button>
         </Form>
-        {message && <MessageText error={!currentResponse?.ok}>{message}</MessageText>} {/* Usa currentResponse.ok aqui */}
+        {message && <MessageText error={!currentResponseRef.current?.ok}>{message}</MessageText>} {/* Usa currentResponseRef.current?.ok */}
         <LinkText>
           Já tem uma conta? <Link to="/login">Faça login aqui</Link>
         </LinkText>
