@@ -1,0 +1,93 @@
+/* Reset básico */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Estilos globais para o corpo do site */
+body, html, #root {
+  height: 100%;
+  margin: 0;
+  font-family: 'Roboto', sans-serif;
+  overflow: hidden;
+}
+
+/* Cores personalizadas */
+:root {
+  --primary-dark: #2c2f33; 
+  --secondary-dark: #3a3f44;
+  --accent-blue: #7289da;
+  --text-light: #dcddde;
+  --text-muted: #99aab5;
+}
+
+/* Estilos base para sidebars que serão controlados por JS */
+.CommunitiesSidebar,
+.ChannelsSidebar {
+  transition: all 0.3s ease-in-out; /* Adiciona transição suave */
+  flex-shrink: 0; /* Impede que encolha */
+  overflow-y: auto; /* Permite rolagem se o conteúdo for grande */
+}
+
+.AppLayout {
+    display: flex;
+    height: 100vh;
+    background-color: var(--primary-dark);
+    color: var(--text-light);
+}
+
+/* Regras de mobile */
+@media (max-width: 768px) {
+  .AppLayout {
+    flex-direction: column; /* Coloca os elementos em coluna no mobile */
+  }
+
+  /* Esconde as sidebars por padrão no mobile */
+  .CommunitiesSidebar,
+  .ChannelsSidebar {
+    position: absolute; /* Posição absoluta para "flutuar" */
+    height: 100vh; /* Ocupa a altura total */
+    z-index: 1000; /* Fica por cima de outros elementos */
+    box-shadow: 2px 0 5px rgba(0,0,0,0.5); /* Sombra para destacar */
+  }
+
+  .CommunitiesSidebar {
+    left: -72px; /* Esconde a primeira sidebar para a esquerda */
+    width: 72px;
+  }
+
+  .ChannelsSidebar {
+    left: -240px; /* Esconde a segunda sidebar para a esquerda */
+    width: 240px;
+    border-right: none; /* Remove a borda direita */
+  }
+
+  /* Mostra a sidebar de comunidades quando a classe 'mobile-open-communities' está ativa */
+  .CommunitiesSidebar.mobile-open-communities {
+    left: 0; /* Desliza para a direita */
+  }
+
+  /* Mostra a sidebar de canais quando a classe 'mobile-open-channels' está ativa */
+  .ChannelsSidebar.mobile-open-channels {
+    left: 0; /* Desliza para a direita */
+  }
+
+  /* A área de conteúdo principal ocupa 100% da largura no mobile */
+  .ContentArea {
+    flex-grow: 1;
+    width: 100%;
+  }
+
+  /* Estilo para o cabeçalho mobile (para ter o botão de menu) */
+  .MobileHeader {
+    display: flex; /* Mostra o cabeçalho mobile */
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: var(--primary-dark);
+    border-bottom: 1px solid #202225;
+    height: 48px;
+    flex-shrink: 0; /* Não permite que encolha */
+  }
+}
