@@ -23,7 +23,7 @@ const HomeContainer = styled.div`
   flex-grow: 1;
   padding: 20px;
   text-align: center;
-  background-color: #36393f; /* Cor do chat principal */
+  background-color: #36393f; /* Corrigido para valor real */
 `;
 
 const HomeTitle = styled.h2`
@@ -34,11 +34,12 @@ const HomeTitle = styled.h2`
 
 const HomeText = styled.p`
   font-size: 1.1em;
-  color: #dcddde;
+  color: #dcddde; /* Corrigido para valor real */
   margin-bottom: 10px;
   max-width: 600px;
 `;
 
+// Estilos do MobileHeader e MenuButton (copiados do App.js para este componente)
 const MobileHeader = styled.div`
   display: none; 
   @media (max-width: 768px) { 
