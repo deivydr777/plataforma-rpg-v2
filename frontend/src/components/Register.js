@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'; // Adicionado useRef
+import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -9,10 +9,9 @@ function Register({ onRegisterSuccess }) {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
-  let currentResponseRef = useRef(null); // USAR useRef para manter a referência da resposta
+  const currentResponseRef = useRef(null); 
 
-  // EXTREMAMENTE IMPORTANTE: SUBSTITUA COM O URL REAL DO SEU BACKEND NO RENDER!
-  const BACKEND_URL = "https://plataforma-rpg.onrender.com"; // <-- SEU URL REAL AQUI!
+  const BACKEND_URL = "https://plataforma-rpg-v2.onrender.com"; // <-- SEU URL REAL AQUI!
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -30,11 +29,11 @@ function Register({ onRegisterSuccess }) {
         },
         body: JSON.stringify({ nome: name, email, senha: password }),
       });
-      currentResponseRef.current = response; // Atribui a resposta ao ref
+      currentResponseRef.current = response; 
 
       const data = await response.json();
 
-      if (currentResponseRef.current.ok) { // Usa currentResponseRef.current.ok
+      if (currentResponseRef.current.ok) { 
         localStorage.setItem('token', data.token);
         setMessage('Registro bem-sucedido! Redirecionando...');
         console.log('Registro bem-sucedido. Token:', data.token);
@@ -87,7 +86,7 @@ function Register({ onRegisterSuccess }) {
           />
           <Button type="submit">Registrar</Button>
         </Form>
-        {message && <MessageText error={!currentResponseRef.current?.ok}>{message}</MessageText>} {/* Usa currentResponseRef.current?.ok */}
+        {message && <MessageText error={!currentResponseRef.current?.ok}>{message}</MessageText>} 
         <LinkText>
           Já tem uma conta? <Link to="/login">Faça login aqui</Link>
         </LinkText>
@@ -145,4 +144,33 @@ const Input = styled.input`
 const Button = styled.button`
   padding: 12px 20px;
   border: none;
-  border-radius: 4px
+  border-radius: 4px;
+  background-color: #5865f2; 
+  color: white;
+  font-size: 1.1em;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+  &:hover {
+    background-color: #4752c4; 
+  }
+`;
+
+const MessageText = styled.p`
+  margin-top: 20px;
+  font-size: 0.9em;
+  color: ${props => props.error ? '#ff5555' : '#55ff55'};
+`;
+
+const LinkText = styled.p`
+  margin-top: 20px;
+  font-size: 0.9em;
+  a {
+    color: #5865f2; 
+    text-decoration: none;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+`;
+
+export default Register;
