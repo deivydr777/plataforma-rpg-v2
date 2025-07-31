@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: rpg-backend
+    env: node
+    plan: free
+    region: ohio
+    rootDir: backend
+    buildCommand: "npm install"
+    startCommand: "node server.js"
+    envVars:
+      - key: MONGODB_URI
+        value: "mongodb+srv://rpguser:yHL5W8OWN5eoZVn3@plataforma-rpg.wu39dgi.mongodb.net/?retryWrites=true&w=majority&appName=Plataforma-RPG"
+      - key: JWT_SECRET
+        value: "super_segredo_do_rpg_aqui_12345XYZABC"
+      - key: OPENAI_API_KEY
+        value: "" # Deixado em branco por enquanto
