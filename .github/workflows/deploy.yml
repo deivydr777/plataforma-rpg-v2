@@ -24,11 +24,11 @@ jobs:
     steps:
       # 1. Baixa o código do seu repositório para a máquina virtual
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4   # Atualizado para v4 (boa prática)
 
       # 2. Configura o Node.js para que possamos usar comandos npm
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4   # Atualizado para v4 (boa prática)
         with:
           node-version: 18 # Usa a versão 18 do Node.js
 
@@ -44,9 +44,9 @@ jobs:
 
       # 5. Configura o GitHub Pages para receber os arquivos
       - name: Setup Pages
-        uses: actions/configure-pages@v3
+        uses: actions/configure-pages@v5   # Atualizado para v5 (boa prática)
 
-      # 6. Envia os arquivos construídos para o GitHub Pages
+      # 6. Envia os arquivos construídos para o GitHub Pages (AQUI ESTÁ A CORREÇÃO PRINCIPAL)
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
@@ -56,4 +56,4 @@ jobs:
       # 7. Finaliza o deploy, publicando o site
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v2
+        uses: actions/deploy-pages@v4    # Atualizado para v4 (boa prática)
