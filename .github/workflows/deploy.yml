@@ -1,1 +1,59 @@
-criação das páginas para hospedar no github page
+# Nome do nosso workflow de deploy
+name: Deploy Frontend to GitHub Pages
+
+# Define quando este workflow deve rodar
+on:
+  # Roda toda vez que você faz um push para a branch 'main'
+  push:
+    branches:
+      - main
+  # Permite que você rode este workflow manualmente pela aba "Actions" do GitHub
+  workflow_dispatch:
+
+# Permissões necessárias para o workflow poder publicar no GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Define o que acontece quando o workflow roda
+jobs:
+  # Nome do nosso "trabalho" de deploy
+  deploy:
+    runs-on: ubuntu-latest # Usa uma máquina virtual Linux para rodar os comandos
+    steps:
+      # 1. Baixa o código do seu repositório para a máquina virtual
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      # 2. Configura o Node.js para que possamos usar comandos npm
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18 # Usa a versão 18 do Node.js
+
+      # 3. Instala todas as dependências do frontend
+      - name: Install Dependencies
+        run: npm install
+        working-directory: ./frontend # Roda o comando dentro da pasta 'frontend'
+
+      # 4. Constrói o projeto React para produção
+      - name: Build
+        run: npm run build
+        working-directory: ./frontend # Roda o comando dentro da pasta 'frontend'
+
+      # 5. Configura o GitHub Pages para receber os arquivos
+      - name: Setup Pages
+        uses: actions/configure-pages@v3
+
+      # 6. Envia os arquivos construídos para o GitHub Pages
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v2
+        with:
+          # Pega os arquivos da pasta 'build' que foi criada dentro do 'frontend'
+          path: './frontend/build'
+      
+      # 7. Finaliza o deploy, publicando o site
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2
