@@ -1,10 +1,14 @@
 import React from 'react';
 import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
+// Não vamos usar o useNavigate aqui para garantir que funcione
+
+// Componente de Link para envolver o card
+const CardLink = styled.a`
+  text-decoration: none;
+  color: inherit;
+`;
 
 function Home() {
-  const navigate = useNavigate();
-
   return (
     <LobbyContainer>
       <Header>
@@ -13,11 +17,14 @@ function Home() {
       </Header>
       
       <CardsContainer>
-        <ActionCard onClick={() => navigate('/global/global')}>
-          <CardIcon>📜</CardIcon>
-          <CardTitle>Mural & Chat Global</CardTitle>
-          <CardDescription>Veja os avisos da plataforma, divulgue suas mesas e converse com outros jogadores.</CardDescription>
-        </ActionCard>
+        {/* A MUDANÇA ESTÁ AQUI: ENVOLVEMOS O CARD NUM LINK <a> SIMPLES */}
+        <CardLink href="#/global/global">
+            <ActionCard>
+              <CardIcon>📜</CardIcon>
+              <CardTitle>Mural & Chat Global</CardTitle>
+              <CardDescription>Veja os avisos da plataforma, divulgue suas mesas e converse com outros jogadores.</CardDescription>
+            </ActionCard>
+        </CardLink>
 
         <ActionCard>
           <CardIcon>🔗</CardIcon>
@@ -58,9 +65,9 @@ const CardsContainer = styled.div`
 `;
 const ActionCard = styled.div`
   background-color: #2f3136; border-radius: 8px; padding: 25px; display: flex; flex-direction: column; align-items: center; text-align: center; border: 1px solid #202225; transition: transform 0.2s, box-shadow 0.2s;
-  cursor: ${props => (props.onClick ? 'pointer' : 'default')};
-  &:hover {
-    ${props => props.onClick && `transform: translateY(-5px); box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);`}
+  height: 100%; box-sizing: border-box;
+  ${CardLink}:hover & {
+    transform: translateY(-5px); box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
   }
 `;
 const CardIcon = styled.div`
