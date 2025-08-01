@@ -4,251 +4,227 @@ import { io } from 'socket.io-client';
 
 const SOCKET_SERVER_URL = "https://plataforma-rpg-v2.onrender.com";
 
+// DADOS FALSOS PARA O MURAL FIXO
+const globalPosts = [
+  { id: 1, author: 'Equipe Pandão', avatar: 'https://i.imgur.com/TUh5Kq8.png', timestamp: '2025-08-01T10:00:00Z', title: '🎉 Bem-vindos à Plataforma RPG!', content: 'Utilize o chat abaixo para divulgar suas mesas, encontrar jogadores e tirar dúvidas. Respeitem as regras da comunidade. Rolagens de dados e ações com /d e /me também funcionam aqui!' },
+  { id: 2, author: 'Equipe Pandão', avatar: 'https://i.imgur.com/TUh5Kq8.png', timestamp: '2025-08-02T14:30:00Z', title: '📢 Funcionalidade de Convites em Breve', content: 'Estamos trabalhando duro na funcionalidade de links de convite para as comunidades. Em breve, os donos de comunidades poderão gerar links para convidar seus amigos.' }
+];
+
+const formatDate = (isoString) => new Date(isoString).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' });
+
 function ChatGlobal({ currentUser, toggleCommunitiesSidebar, toggleChannelsSidebar }) {
-  const [messages, setMessages] = useState([]);
+  // Estado para as mensagens do chat em tempo real
+  const [chatMessages, setChatMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState('');
   const socket = useRef(null);
   const messagesEndRef = useRef(null);
 
-  // --- INÍCIO DA MUDANÇA ---
-  // Unificamos a lógica do socket em um único useEffect.
+  // --- LÓGICA DO SOCKET CORRIGIDA ---
   useEffect(() => {
-    // 1. Conecta ao socket
     socket.current = io(SOCKET_SERVER_URL);
+    const roomName = 'global-global';
 
-    // 2. Define o ouvinte para receber mensagens
+    socket.current.emit('entrar_sala', roomName);
+    console.log(`Entrando na sala: ${roomName}`);
+
     const messageListener = (message) => {
-      // Garante que só mensagens da sala global sejam adicionadas
-      if (message.sala === 'global-global') {
-        setMessages((prevMessages) => [...prevMessages, message]);
+      // Adiciona apenas mensagens da sala correta
+      if (message.sala === roomName) {
+        setChatMessages((prevMessages) => [...prevMessages, message]);
       }
     };
     socket.current.on('receber_mensagem', messageListener);
 
-    // 3. Entra na sala global
-    const roomName = 'global-global';
-    socket.current.emit('entrar_sala', roomName);
-    console.log(`Entrando na sala global: ${roomName}`);
-    
-    // 4. A FUNÇÃO DE LIMPEZA
-    // Será executada quando o usuário sair do Chat Global.
+    // FUNÇÃO DE LIMPEZA - Essencial para evitar mensagens duplicadas
     return () => {
-      console.log("Limpando socket do Chat Global.");
+      console.log("Saindo do Chat Global, limpando socket.");
       socket.current.off('receber_mensagem', messageListener);
       socket.current.disconnect();
     };
-    
-  // A array de dependências vazia `[]` faz com que este useEffect rode
-  // apenas uma vez: quando o componente ChatGlobal é montado.
-  }, []);
-  // --- FIM DA MUDANÇA ---
+  }, []); // Array vazio, roda apenas uma vez
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [chatMessages]);
 
   const handleSendMessage = () => {
-    if (inputMessage.trim() && socket.current) {
-      const messageData = {
+    const trimmedMessage = inputMessage.trim();
+    if (!trimmedMessage || !socket.current) return;
+
+    let messageData = {};
+
+    if (trimmedMessage.toLowerCase().startsWith('/d')) {
+      const sides = parseInt(trimmedMessage.substring(2), 10);
+      messageData = {
+        sala: 'global-global',
+        texto: sides > 0 ? `${currentUser.name} rolou um d${sides} e tirou ${Math.floor(Math.random() * sides) + 1}.` : `Comando inválido.`,
+        isSystem: true,
+      };
+    } else if (trimmedMessage.toLowerCase().startsWith('/me ')) {
+      messageData = {
+        sala: 'global-global',
+        texto: `* ${currentUser.name} ${trimmedMessage.substring(4)} *`,
+        isAction: true,
+      };
+    } else {
+      messageData = {
         sala: 'global-global',
         remetente: currentUser.name,
         avatar: currentUser.avatar,
-        texto: inputMessage.trim(),
-        timestamp: new Date().toISOString(),
+        texto: trimmedMessage,
       };
-      
-      socket.current.emit('enviar_mensagem', messageData);
-      
-      // Otimização otimista: adiciona a mensagem localmente.
-      setMessages((prevMessages) => [...prevMessages, messageData]);
-      
-      setInputMessage('');
     }
+
+    messageData.timestamp = new Date().toISOString();
+    socket.current.emit('enviar_mensagem', messageData);
+    setInputMessage('');
   };
 
-  // ... O resto do seu código (return com JSX e Estilos) continua exatamente o mesmo ...
   return (
-    <ChatArea>
+    <MuralArea>
       <MobileHeader>
         <MenuButton onClick={toggleCommunitiesSidebar}>☰</MenuButton>
-        <MobileTitle>🌍 Chat Global</MobileTitle>
-        <MenuButton onClick={toggleChannelsSidebar}>Canais</MenuButton>
+        <MobileTitle>🌍 Mural & Chat Global</MobileTitle>
       </MobileHeader>
-      <ChatHeader>
-        <h2>🌍 Chat Global</h2>
-      </ChatHeader>
-      <ChatMessages>
-        {messages.map((msg, index) => (
-          <Message key={index} self={msg.remetente === currentUser.name}>
-            {msg.remetente !== currentUser.name && <Avatar src={msg.avatar || "https://via.placeholder.com/40/FF0000/FFFFFF?text=AV"} />}
-            <MessageContent self={msg.remetente === currentUser.name}>
-              <MessageAuthor self={msg.remetente === currentUser.name}>{msg.remetente}</MessageAuthor>
-              <MessageText>{msg.texto}</MessageText>
-            </MessageContent>
-          </Message>
+      
+      <MuralHeader>
+        <h2>🌍 Mural Global</h2>
+        <p>Avisos importantes da Equipe Pandão.</p>
+      </MuralHeader>
+      
+      <PostsContainer>
+        {globalPosts.map((post) => (
+          <PostCard key={post.id}>
+            <PostHeader>
+              <AuthorInfo><Avatar src={post.avatar} /> <AuthorName>{post.author}</AuthorName></AuthorInfo>
+              <PostDate>{formatDate(post.timestamp)}</PostDate>
+            </PostHeader>
+            <PostContent>
+              <PostTitle>{post.title}</PostTitle>
+              <PostText>{post.content}</PostText>
+            </PostContent>
+          </PostCard>
         ))}
+      </PostsContainer>
+
+      <ChatLiveHeader>
+        <h3>Chat ao Vivo</h3>
+      </ChatLiveHeader>
+
+      <ChatMessages>
+        {chatMessages.map((msg, index) => {
+            if (msg.isSystem) return <SystemMessage key={index}>{msg.texto}</SystemMessage>;
+            if (msg.isAction) return <ActionMessage key={index}>{msg.texto}</ActionMessage>;
+            return (
+                <Message key={index} self={msg.remetente === currentUser.name}>
+                    {msg.remetente !== currentUser.name && <Avatar src={msg.avatar || "https://via.placeholder.com/40"} />}
+                    <MessageContent self={msg.remetente === currentUser.name}>
+                      <MessageAuthor self={msg.remetente === currentUser.name}>{msg.remetente}</MessageAuthor>
+                      <MessageText>{msg.texto}</MessageText>
+                    </MessageContent>
+                </Message>
+            );
+        })}
         <div ref={messagesEndRef} />
       </ChatMessages>
+
       <ChatInputArea>
         <Input 
-          placeholder="Mensagem para o chat global..."
+          placeholder="Digite uma mensagem ou comando..."
           value={inputMessage}
           onChange={(e) => setInputMessage(e.target.value)}
           onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
         />
         <SendButton onClick={handleSendMessage}>Enviar</SendButton>
       </ChatInputArea>
-    </ChatArea>
+    </MuralArea>
   );
 }
 
-// ... Estilos ...
-const ChatArea = styled.div`
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-  background-color: #36393f; 
+// --- Estilos ---
+
+const MuralArea = styled.div`
+  flex-grow: 1; display: flex; flex-direction: column; background-color: #36393f; overflow-y: hidden;
 `;
-
-const ChatHeader = styled.div`
-  background-color: #36393f; 
-  padding: 10px 20px;
-  border-bottom: 1px solid #202225; 
-  display: flex;
-  align-items: center;
-  height: 48px;
-
-  h2 {
-    font-size: 1.1em;
-    margin: 0;
-    color: #ffffff;
-  }
+const MuralHeader = styled.div`
+  padding: 20px 30px; border-bottom: 1px solid #202225; background-color: #2f3136; flex-shrink: 0;
+  h2 { font-size: 1.5em; margin: 0 0 5px 0; color: #ffffff; }
+  p { margin: 0; color: #b9bbbe; }
 `;
-
-const ChatMessages = styled.div`
-  flex-grow: 1;
-  padding: 20px;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
+const PostsContainer = styled.div`
+  padding: 20px 30px; display: flex; flex-direction: column; gap: 15px; flex-shrink: 0;
 `;
-
-const Message = styled.div`
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-
-  ${props => props.self && `
-    justify-content: flex-end;
-  `}
+const PostCard = styled.div`
+  background-color: #2f3136; border-radius: 8px; border: 1px solid #202225;
 `;
-
+const PostHeader = styled.div`
+  padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; background-color: #292b2f;
+`;
+const AuthorInfo = styled.div`
+  display: flex; align-items: center; gap: 10px;
+`;
 const Avatar = styled.img`
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background-color: #2c2f33; 
+  width: 32px; height: 32px; border-radius: 50%;
 `;
-
+const AuthorName = styled.span`
+  font-weight: bold; color: #ffffff;
+`;
+const PostDate = styled.span`
+  font-size: 0.8em; color: #8e9297;
+`;
+const PostContent = styled.div`
+  padding: 15px;
+`;
+const PostTitle = styled.h3`
+  font-size: 1.1em; margin: 0 0 10px 0; color: #ffffff;
+`;
+const PostText = styled.p`
+  margin: 0; font-size: 0.95em; line-height: 1.6; color: #dcddde;
+`;
+const ChatLiveHeader = styled.div`
+  padding: 10px 30px; background-color: #2f3136; border-top: 1px solid #202225; border-bottom: 1px solid #202225;
+  h3 { margin: 0; color: #ffffff; font-size: 1em; text-transform: uppercase; letter-spacing: 0.5px; }
+`;
+const ChatMessages = styled.div`
+  flex-grow: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px;
+`;
+const Message = styled.div`
+  display: flex; align-items: flex-start; gap: 10px;
+  ${props => props.self && `justify-content: flex-end;`}
+`;
 const MessageContent = styled.div`
-  background-color: #40444b; 
-  padding: 10px 15px;
-  border-radius: 8px;
-  max-width: 70%;
-  text-align: left;
-  ${props => props.self && `
-    background-color: #5865f2; 
-    color: #ffffff;
-  `}
+  background-color: ${props => props.self ? '#5865f2' : '#40444b'};
+  color: #ffffff; padding: 10px 15px; border-radius: 8px; max-width: 70%;
 `;
-
 const MessageAuthor = styled.div`
-  font-weight: bold;
-  margin-bottom: 5px;
-  color: #5865f2; 
-  ${props => props.self && `
-    color: #ffffff;
-  `}
+  font-weight: bold; margin-bottom: 5px; color: ${props => props.self ? '#ffffff' : '#5865f2'};
 `;
-
 const MessageText = styled.p`
-  font-size: 0.95em;
-  line-height: 1.4;
+  margin: 0; font-size: 0.95em; line-height: 1.4;
 `;
-
+const SystemMessage = styled.div`
+  text-align: center; color: #8e9297; font-style: italic; font-size: 0.9em;
+`;
+const ActionMessage = styled.div`
+  color: #b9bbbe; font-style: italic;
+`;
 const ChatInputArea = styled.div`
-  padding: 15px 20px;
-  background-color: #36393f; 
-  border-top: 1px solid #202225; 
-  display: flex;
-  gap: 10px;
+  padding: 15px 20px; border-top: 1px solid #202225; display: flex; gap: 10px; flex-shrink: 0;
 `;
-
 const Input = styled.input`
-  flex-grow: 1;
-  padding: 10px 15px;
-  border-radius: 8px;
-  border: none;
-  background-color: #40444b; 
-  color: #dcddde; 
-  font-size: 1em;
-
-  &:focus {
-    outline: none;
-    box-shadow: 0 0 0 2px #5865f2; 
-  }
+  flex-grow: 1; padding: 10px 15px; border-radius: 8px; border: none; background-color: #40444b; color: #dcddde;
 `;
-
 const SendButton = styled.button`
-  padding: 10px 20px;
-  border-radius: 8px;
-  border: none;
-  background-color: #5865f2; 
-  color: white;
-  font-size: 1em;
-  cursor: pointer;
-  transition: background-color 0.2s;
-
-  &:hover {
-    background-color: #4752c4; 
-  }
+  padding: 10px 20px; border-radius: 8px; border: none; background-color: #5865f2; color: white; cursor: pointer;
 `;
-
 const MobileHeader = styled.div`
-  display: none; 
-  @media (max-width: 768px) { 
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 10px;
-    background-color: #202225; 
-    color: #dcddde; 
-    height: 48px;
-    flex-shrink: 0;
-    width: 100%;
-    position: relative; 
-    z-index: 50; 
-  }
+  display: none; @media (max-width: 768px) { display: flex; justify-content: space-between; align-items: center; padding: 0 10px; background-color: #202225; height: 48px; flex-shrink: 0; }
 `;
-
 const MobileTitle = styled.h2`
-  font-size: 1.1em;
-  margin: 0;
-  color: #dcddde; 
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: calc(100% - 100px);
+  font-size: 1.1em; margin: 0; color: #dcddde;
 `;
-
 const MenuButton = styled.button`
-  background: none;
-  border: none;
-  color: #dcddde; 
-  font-size: 1.5em;
-  cursor: pointer;
-  padding: 5px;
+  background: none; border: none; color: #dcddde; font-size: 1.5em; cursor: pointer;
 `;
 
 export default ChatGlobal;
