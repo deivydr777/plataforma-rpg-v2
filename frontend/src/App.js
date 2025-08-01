@@ -37,11 +37,14 @@ function App() {
   const [activeChannel, setActiveChannel] = useState(null);
   const [showCommunitiesSidebar, setShowCommunitiesSidebar] = useState(false);
   const [showChannelsSidebar, setShowChannelsSidebar] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  
+  // AQUI ESTÁ A MUDANÇA! O usuário agora começa "logado".
+  const [isAuthenticated, setIsAuthenticated] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    setIsAuthenticated(!!token);
+    // Se você quiser manter a lógica de token, pode deixar, mas com o estado inicial true, ele já entra direto.
+    // setIsAuthenticated(!!token); 
 
     if (token && (window.location.pathname === '/login' || window.location.pathname === '/register')) {
       navigate('/hogwarts/geral', { replace: true });
@@ -53,7 +56,8 @@ function App() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
+    // Para deslogar, agora teríamos que mudar o estado para false
+    // localStorage.removeItem('token');
     setIsAuthenticated(false);
     navigate('/login');
   };
