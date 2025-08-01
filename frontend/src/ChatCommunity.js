@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { useParams } from 'react-router-dom';
 import { io } from 'socket.io-client';
 
-const SOCKET_SERVER_URL = "https://plataforma-rpg-v2.onrender.com"; // <-- SEU URL REAL AQUI!
+const SOCKET_SERVER_URL = "https://plataforma-rpg-v2.onrender.com";
 
 function ChatCommunity({ currentUser, messagesData, toggleCommunitiesSidebar, toggleChannelsSidebar }) {
   const { communityId, channelId } = useParams();
@@ -15,30 +15,37 @@ function ChatCommunity({ currentUser, messagesData, toggleCommunitiesSidebar, to
   const currentCommunity = messagesData.find(comm => comm.id === communityId);
   const currentChannel = currentCommunity?.channels?.find(chan => chan.id === channelId);
 
+  // --- INÍCIO DA MUDANÇA ---
+  // Unimos toda a lógica do socket em um único useEffect para controle total.
   useEffect(() => {
-    if (!socket.current) {
-      socket.current = io(SOCKET_SERVER_URL);
+    // 1. Conecta ao socket
+    socket.current = io(SOCKET_SERVER_URL);
 
-      socket.current.on('receber_mensagem', (message) => {
-        setMessages((prevMessages) => [...prevMessages, message]);
-      });
+    // 2. Define o que fazer quando uma mensagem é recebida
+    const messageListener = (message) => {
+      setMessages((prevMessages) => [...prevMessages, message]);
+    };
+    socket.current.on('receber_mensagem', messageListener);
 
-      return () => {
-        if (socket.current) {
-          socket.current.disconnect();
-          socket.current = null;
-        }
-      };
+    // 3. Entra na sala (canal) correta
+    if (communityId && channelId) {
+      const roomName = `${communityId}-${channelId}`;
+      socket.current.emit('entrar_sala', roomName);
+      console.log(`Entrando na sala: ${roomName}`);
     }
-  }, []);
 
-  useEffect(() => {
-    if (socket.current && communityId && channelId) {
-      socket.current.emit('entrar_sala', `${communityId}-${channelId}`);
-      setMessages([]);
-      console.log(`Entrando na sala: ${communityId}-${channelId}`);
-    }
-  }, [socket.current, communityId, channelId]);
+    // 4. A LIMPEZA: Isso é executado QUANDO O CANAL MUDA ou o componente sai da tela.
+    return () => {
+      console.log("Limpando socket: removendo ouvinte e desconectando.");
+      socket.current.off('receber_mensagem', messageListener); // Remove o ouvinte anterior
+      socket.current.disconnect(); // Desconecta para garantir que não haja conexões sobrando
+    };
+    
+  // Esta array de dependências garante que todo este bloco (conectar, ouvir, limpar)
+  // será re-executado a cada vez que o usuário mudar de comunidade ou canal.
+  }, [communityId, channelId]);
+  // --- FIM DA MUDANÇA ---
+
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -55,11 +62,17 @@ function ChatCommunity({ currentUser, messagesData, toggleCommunitiesSidebar, to
       };
       
       socket.current.emit('enviar_mensagem', messageData);
+      
+      // A linha abaixo adiciona sua própria mensagem imediatamente.
+      // É uma "otimização otimista". Se o servidor for a única fonte da verdade,
+      // você pode querer remover esta linha e confiar apenas no evento 'receber_mensagem'.
       setMessages((prevMessages) => [...prevMessages, messageData]);
+      
       setInputMessage('');
     }
   };
 
+  // ... O resto do seu código (a parte do return com o HTML/JSX) continua exatamente o mesmo ...
   return (
     <ChatArea>
       <MobileHeader>
@@ -98,6 +111,7 @@ function ChatCommunity({ currentUser, messagesData, toggleCommunitiesSidebar, to
   );
 }
 
+// ... Estilos ...
 const ChatArea = styled.div`
   flex-grow: 1;
   display: flex;

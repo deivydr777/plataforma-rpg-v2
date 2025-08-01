@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { io } from 'socket.io-client';
 
-const SOCKET_SERVER_URL = "https://plataforma-rpg-v2.onrender.com"; // <-- SEU URL REAL AQUI!
+const SOCKET_SERVER_URL = "https://plataforma-rpg-v2.onrender.com";
 
 function ChatGlobal({ currentUser, toggleCommunitiesSidebar, toggleChannelsSidebar }) {
   const [messages, setMessages] = useState([]);
@@ -10,51 +10,63 @@ function ChatGlobal({ currentUser, toggleCommunitiesSidebar, toggleChannelsSideb
   const socket = useRef(null);
   const messagesEndRef = useRef(null);
 
+  // --- INÍCIO DA MUDANÇA ---
+  // Unificamos a lógica do socket em um único useEffect.
   useEffect(() => {
-    if (!socket.current) {
-      socket.current = io(SOCKET_SERVER_URL);
+    // 1. Conecta ao socket
+    socket.current = io(SOCKET_SERVER_URL);
 
-      socket.current.on('receber_mensagem', (message) => {
+    // 2. Define o ouvinte para receber mensagens
+    const messageListener = (message) => {
+      // Garante que só mensagens da sala global sejam adicionadas
+      if (message.sala === 'global-global') {
         setMessages((prevMessages) => [...prevMessages, message]);
-      });
+      }
+    };
+    socket.current.on('receber_mensagem', messageListener);
 
-      return () => {
-        if (socket.current) {
-          socket.current.disconnect();
-          socket.current = null;
-        }
-      };
-    }
+    // 3. Entra na sala global
+    const roomName = 'global-global';
+    socket.current.emit('entrar_sala', roomName);
+    console.log(`Entrando na sala global: ${roomName}`);
+    
+    // 4. A FUNÇÃO DE LIMPEZA
+    // Será executada quando o usuário sair do Chat Global.
+    return () => {
+      console.log("Limpando socket do Chat Global.");
+      socket.current.off('receber_mensagem', messageListener);
+      socket.current.disconnect();
+    };
+    
+  // A array de dependências vazia `[]` faz com que este useEffect rode
+  // apenas uma vez: quando o componente ChatGlobal é montado.
   }, []);
-
-  useEffect(() => {
-    if (socket.current) { 
-        socket.current.emit('entrar_sala', `global-global`); 
-        setMessages([]);
-        console.log(`Entrando na sala global: global-global`);
-    }
-  }, [socket.current]); 
+  // --- FIM DA MUDANÇA ---
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
   const handleSendMessage = () => {
-    if (inputMessage.trim() && socket.current) { 
+    if (inputMessage.trim() && socket.current) {
       const messageData = {
-        sala: `global-global`, 
-        remetente: currentUser.name, 
-        avatar: currentUser.avatar, 
+        sala: 'global-global',
+        remetente: currentUser.name,
+        avatar: currentUser.avatar,
         texto: inputMessage.trim(),
         timestamp: new Date().toISOString(),
       };
       
       socket.current.emit('enviar_mensagem', messageData);
+      
+      // Otimização otimista: adiciona a mensagem localmente.
       setMessages((prevMessages) => [...prevMessages, messageData]);
+      
       setInputMessage('');
     }
   };
 
+  // ... O resto do seu código (return com JSX e Estilos) continua exatamente o mesmo ...
   return (
     <ChatArea>
       <MobileHeader>
@@ -90,6 +102,7 @@ function ChatGlobal({ currentUser, toggleCommunitiesSidebar, toggleChannelsSideb
   );
 }
 
+// ... Estilos ...
 const ChatArea = styled.div`
   flex-grow: 1;
   display: flex;
