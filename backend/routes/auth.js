@@ -1,84 +1,92 @@
 const express = require('express');
-const router = express.Router(); // Cria um "roteador" para organizar as rotas
-const bcrypt = require('bcryptjs'); // Para criptografar senhas
-const jwt = require('jsonwebtoken'); // Para gerar tokens de sessão
-const Usuario = require('../models/Usuario'); // Importa o modelo de Usuário
+const router = express.Router();
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const { PrismaClient } = require('@prisma/client');
 
-// Rota de Registro de Usuário (/api/auth/register)
+const prisma = new PrismaClient();
+
+// ROTA DE REGISTRO (versão PRISMA)
 router.post('/register', async (req, res) => {
-    const { nome, email, senha } = req.body; // Pega os dados do corpo da requisição
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+        return res.status(400).json({ msg: 'Por favor, inclua um e-mail e uma senha.' });
+    }
 
     try {
-        // 1. Verificar se o usuário já existe
-        let usuario = await Usuario.findOne({ email });
-        if (usuario) {
+        const userExists = await prisma.user.findUnique({
+            where: { email: email }
+        });
+
+        if (userExists) {
             return res.status(400).json({ msg: 'Usuário com este e-mail já existe.' });
         }
 
-        // 2. Criar uma nova instância de usuário
-        usuario = new Usuario({
-            nome,
-            email,
-            senha
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+
+        const newUser = await prisma.user.create({
+            data: {
+                email: email,
+                password: hashedPassword
+            }
         });
 
-        // 3. Criptografar a senha
-        const salt = await bcrypt.genSalt(10); // Gera um "sal" para a criptografia
-        usuario.senha = await bcrypt.hash(senha, salt); // Criptografa a senha
-
-        // 4. Salvar o usuário no banco de dados
-        await usuario.save();
-
-        // 5. Gerar um Token de Sessão (JWT)
         const payload = {
-            usuario: {
-                id: usuario.id // Guarda o ID do usuário no token
+            user: {
+                id: newUser.id
             }
         };
 
         jwt.sign(
             payload,
-            process.env.JWT_SECRET, // O segredo para assinar o token (do nosso .env)
-            { expiresIn: '1h' }, // Token expira em 1 hora
+            process.env.JWT_SECRET || 'seu_segredo_secreto_para_testes',
+            { expiresIn: '1h' },
             (err, token) => {
                 if (err) throw err;
-                res.json({ token }); // Retorna o token para o frontend
+                res.status(201).json({ token });
             }
         );
 
     } catch (err) {
-        console.error(err.message);
+        console.error('Erro no registro:', err.message);
         res.status(500).send('Erro no Servidor');
     }
 });
 
-// Rota de Login de Usuário (/api/auth/login)
+// ROTA DE LOGIN (versão PRISMA)
 router.post('/login', async (req, res) => {
-    const { email, senha } = req.body; // Pega os dados do corpo da requisição
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+        return res.status(400).json({ msg: 'Por favor, inclua um e-mail e uma senha.' });
+    }
 
     try {
-        // 1. Verificar se o usuário existe
-        let usuario = await Usuario.findOne({ email });
-        if (!usuario) {
+        const user = await prisma.user.findUnique({
+            where: { email: email }
+        });
+
+        if (!user) {
             return res.status(400).json({ msg: 'Credenciais inválidas.' });
         }
 
-        // 2. Comparar a senha fornecida com a senha criptografada no banco de dados
-        const isMatch = await bcrypt.compare(senha, usuario.senha);
+        const isMatch = await bcrypt.compare(password, user.password);
+
         if (!isMatch) {
             return res.status(400).json({ msg: 'Credenciais inválidas.' });
         }
 
-        // 3. Gerar um Token de Sessão (JWT)
         const payload = {
-            usuario: {
-                id: usuario.id
+            user: {
+                id: user.id
             }
         };
 
         jwt.sign(
             payload,
-            process.env.JWT_SECRET,
+            process.env.JWT_SECRET || 'seu_segredo_secreto_para_testes',
             { expiresIn: '1h' },
             (err, token) => {
                 if (err) throw err;
@@ -87,9 +95,9 @@ router.post('/login', async (req, res) => {
         );
 
     } catch (err) {
-        console.error(err.message);
+        console.error('Erro no login:', err.message);
         res.status(500).send('Erro no Servidor');
     }
 });
 
-module.exports = router; // Exporta o roteador para ser usado em server.js
+module.exports = router;
