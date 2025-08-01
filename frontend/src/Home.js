@@ -42,13 +42,14 @@ function Home() {
 
 const LobbyContainer = styled.div`
   flex-grow: 1;
-  padding: 40px;
+  padding: 40px 20px; /* Reduz padding lateral em telas pequenas */
   background-color: #36393f;
   color: #dcddde;
   display: flex;
   flex-direction: column;
   align-items: center;
-  overflow-y: auto;
+  /* AQUI ESTÁ A CORREÇÃO CRUCIAL */
+  overflow-y: auto; 
   width: 100%;
 `;
 
@@ -58,20 +59,26 @@ const Header = styled.div`
 `;
 
 const Title = styled.h1`
-  font-size: 2.5em;
+  font-size: 2.2em; /* Ajuste para telas menores */
   margin-bottom: 10px;
   color: #ffffff;
+  @media (max-width: 768px) {
+    font-size: 1.8em;
+  }
 `;
 
 const Subtitle = styled.p`
-  font-size: 1.2em;
+  font-size: 1.1em;
   color: #b9bbbe;
+  @media (max-width: 768px) {
+    font-size: 1em;
+  }
 `;
 
 const CardsContainer = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 30px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Mínimo menor para caber melhor */
+  gap: 20px;
   width: 100%;
   max-width: 1200px;
 `;
@@ -86,6 +93,7 @@ const ActionCard = styled.div`
   text-align: center;
   border: 1px solid #202225;
   transition: transform 0.2s, box-shadow 0.2s;
+  /* GARANTINDO QUE SEJA CLICÁVEL */
   cursor: ${props => (props.onClick ? 'pointer' : 'default')};
 
   &:hover {
