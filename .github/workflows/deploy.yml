@@ -48,7 +48,7 @@ jobs:
 
       # 6. Envia os arquivos construídos para o GitHub Pages
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v2
+        uses: actions/upload-pages-artifact@v3
         with:
           # Pega os arquivos da pasta 'build' que foi criada dentro do 'frontend'
           path: './frontend/build'
