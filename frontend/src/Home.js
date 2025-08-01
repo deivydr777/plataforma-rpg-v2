@@ -5,25 +5,23 @@ import { useNavigate } from 'react-router-dom';
 function Home() {
   const navigate = useNavigate();
 
-  // Função para garantir que o clique funcione
   const goToChatGlobal = () => {
-    // Usamos o # para o HashRouter
     navigate('/global/global');
   };
 
   return (
     <LobbyContainer>
       <Header>
-        <Title>Bem-vindo à Plataforma RPG</Title>
+        {/* AQUI ESTÁ A CORREÇÃO QUE FALTAVA */}
+        <Title>Bem-vindo à WorldWeaver</Title>
         <Subtitle>Seu ponto de partida para novas aventuras.</Subtitle>
       </Header>
       
       <CardsContainer>
-        {/* Usamos a função diretamente aqui */}
         <ActionCard onClick={goToChatGlobal}>
-          <CardIcon>🌍</CardIcon>
-          <CardTitle>Chat Global</CardTitle>
-          <CardDescription>Converse com todos os jogadores da plataforma, compartilhe ideias e encontre novos grupos.</CardDescription>
+          <CardIcon>📜</CardIcon>
+          <CardTitle>Mural & Chat Global</CardTitle>
+          <CardDescription>Veja os avisos da plataforma, divulgue suas mesas e converse com outros jogadores.</CardDescription>
         </ActionCard>
 
         <ActionCard>
@@ -45,7 +43,7 @@ function Home() {
   );
 }
 
-// --- ESTILOS CORRIGIDOS E SIMPLIFICADOS ---
+// --- Estilos para o Lobby ---
 
 const LobbyContainer = styled.div`
   display: flex;
@@ -56,15 +54,14 @@ const LobbyContainer = styled.div`
   width: 100%;
   height: 100%;
   padding: 40px 20px;
-  /* GARANTE A ROLAGEM */
   overflow-y: auto;
-  box-sizing: border-box; /* Garante que o padding não quebre o layout */
+  box-sizing: border-box;
 `;
 
 const Header = styled.div`
   text-align: center;
   margin-bottom: 40px;
-  flex-shrink: 0; /* Impede que o header encolha */
+  flex-shrink: 0;
 `;
 
 const Title = styled.h1`
@@ -92,7 +89,6 @@ const CardsContainer = styled.div`
   max-width: 1200px;
 `;
 
-// AQUI ESTÁ A MUDANÇA MAIS IMPORTANTE
 const ActionCard = styled.div`
   background-color: #2f3136;
   border-radius: 8px;
@@ -103,11 +99,7 @@ const ActionCard = styled.div`
   text-align: center;
   border: 1px solid #202225;
   transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
-  
-  /* FORÇA O CURSOR DE CLIQUE SE ONCLICK EXISTIR */
   cursor: ${props => (props.onClick ? 'pointer' : 'default')};
-
-  /* Garante que o Card esteja "acima" de outros elementos */
   position: relative;
   z-index: 1;
 
@@ -145,7 +137,7 @@ const Input = styled.input`
   background-color: #40444b;
   color: #dcddde;
   margin-bottom: 10px;
-  z-index: 2; /* Garante que o input esteja acima do card */
+  z-index: 2;
   position: relative;
 
   &::placeholder {
@@ -163,7 +155,7 @@ const Button = styled.button`
   font-weight: bold;
   cursor: pointer;
   transition: background-color 0.2s;
-  z-index: 2; /* Garante que o botão esteja acima do card */
+  z-index: 2;
   position: relative;
 
   &:hover {
