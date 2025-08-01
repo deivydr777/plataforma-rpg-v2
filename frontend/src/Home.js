@@ -5,6 +5,12 @@ import { useNavigate } from 'react-router-dom';
 function Home() {
   const navigate = useNavigate();
 
+  // Função para garantir que o clique funcione
+  const goToChatGlobal = () => {
+    // Usamos o # para o HashRouter
+    navigate('/global/global');
+  };
+
   return (
     <LobbyContainer>
       <Header>
@@ -13,7 +19,8 @@ function Home() {
       </Header>
       
       <CardsContainer>
-        <ActionCard onClick={() => navigate('/global/global')}>
+        {/* Usamos a função diretamente aqui */}
+        <ActionCard onClick={goToChatGlobal}>
           <CardIcon>🌍</CardIcon>
           <CardTitle>Chat Global</CardTitle>
           <CardDescription>Converse com todos os jogadores da plataforma, compartilhe ideias e encontre novos grupos.</CardDescription>
@@ -38,28 +45,30 @@ function Home() {
   );
 }
 
-// --- Estilos para o Lobby ---
+// --- ESTILOS CORRIGIDOS E SIMPLIFICADOS ---
 
 const LobbyContainer = styled.div`
-  flex-grow: 1;
-  padding: 40px 20px; /* Reduz padding lateral em telas pequenas */
-  background-color: #36393f;
-  color: #dcddde;
   display: flex;
   flex-direction: column;
   align-items: center;
-  /* AQUI ESTÁ A CORREÇÃO CRUCIAL */
-  overflow-y: auto; 
+  background-color: #36393f;
+  color: #dcddde;
   width: 100%;
+  height: 100%;
+  padding: 40px 20px;
+  /* GARANTE A ROLAGEM */
+  overflow-y: auto;
+  box-sizing: border-box; /* Garante que o padding não quebre o layout */
 `;
 
 const Header = styled.div`
   text-align: center;
   margin-bottom: 40px;
+  flex-shrink: 0; /* Impede que o header encolha */
 `;
 
 const Title = styled.h1`
-  font-size: 2.2em; /* Ajuste para telas menores */
+  font-size: 2.2em;
   margin-bottom: 10px;
   color: #ffffff;
   @media (max-width: 768px) {
@@ -77,12 +86,13 @@ const Subtitle = styled.p`
 
 const CardsContainer = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Mínimo menor para caber melhor */
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 20px;
   width: 100%;
   max-width: 1200px;
 `;
 
+// AQUI ESTÁ A MUDANÇA MAIS IMPORTANTE
 const ActionCard = styled.div`
   background-color: #2f3136;
   border-radius: 8px;
@@ -92,14 +102,19 @@ const ActionCard = styled.div`
   align-items: center;
   text-align: center;
   border: 1px solid #202225;
-  transition: transform 0.2s, box-shadow 0.2s;
-  /* GARANTINDO QUE SEJA CLICÁVEL */
+  transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+  
+  /* FORÇA O CURSOR DE CLIQUE SE ONCLICK EXISTIR */
   cursor: ${props => (props.onClick ? 'pointer' : 'default')};
+
+  /* Garante que o Card esteja "acima" de outros elementos */
+  position: relative;
+  z-index: 1;
 
   &:hover {
     ${props => props.onClick && `
       transform: translateY(-5px);
-      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
     `}
   }
 `;
@@ -130,6 +145,8 @@ const Input = styled.input`
   background-color: #40444b;
   color: #dcddde;
   margin-bottom: 10px;
+  z-index: 2; /* Garante que o input esteja acima do card */
+  position: relative;
 
   &::placeholder {
     color: #8e9297;
@@ -146,6 +163,8 @@ const Button = styled.button`
   font-weight: bold;
   cursor: pointer;
   transition: background-color 0.2s;
+  z-index: 2; /* Garante que o botão esteja acima do card */
+  position: relative;
 
   &:hover {
     background-color: #4752c4;
