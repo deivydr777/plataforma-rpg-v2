@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-// AQUI ESTÁ A PRIMEIRA PARTE DA CORREÇÃO: ADICIONAMOS O BrowserRouter
-import { BrowserRouter, Routes, Route, useNavigate, Navigate } from 'react-router-dom';
+// AQUI ESTÁ A MUDANÇA PRINCIPAL! Trocamos BrowserRouter por HashRouter.
+import { HashRouter as Router, Routes, Route, useNavigate, Navigate } from 'react-router-dom';
 
 import Home from './Home';
 import ChatCommunity from './ChatCommunity'; 
@@ -22,119 +22,115 @@ const communitiesData = [
   { id: 'global', name: 'Chat Global', icon: '🌍', channels: [{id: 'global', name: 'global', type: 'text'}] },
 ];
 
-// O componente AppWrapper é necessário porque o hook `useNavigate` só pode ser usado dentro de um Router.
-function AppWrapper() {
-  return (
-    // AQUI ESTÁ A SEGUNDA PARTE DA CORREÇÃO: ENVOLVEMOS O APP COM O BROWSERROUTER
-    <BrowserRouter basename="/plataforma-rpg-v2">
-      <App />
-    </BrowserRouter>
-  );
-}
+// Componente de navegação para usar os hooks do Router
+function AppContent() {
+    const navigate = useNavigate();
+    const [activeCommunity, setActiveCommunity] = useState(null);
+    const [activeChannel, setActiveChannel] = useState(null);
+    const [showCommunitiesSidebar, setShowCommunitiesSidebar] = useState(false);
+    const [showChannelsSidebar, setShowChannelsSidebar] = useState(false);
+    const [isAuthenticated, setIsAuthenticated] = useState(true);
 
+    useEffect(() => {
+        setShowCommunitiesSidebar(false);
+        setShowChannelsSidebar(false);
+    }, [activeCommunity, activeChannel, navigate]);
 
-function App() {
-  const navigate = useNavigate();
-  const [activeCommunity, setActiveCommunity] = useState(null);
-  const [activeChannel, setActiveChannel] = useState(null);
-  const [showCommunitiesSidebar, setShowCommunitiesSidebar] = useState(false);
-  const [showChannelsSidebar, setShowChannelsSidebar] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(true);
+    const handleLogoClick = () => {
+        setActiveCommunity(null);
+        setActiveChannel(null);
+        navigate('/');
+    };
 
-  useEffect(() => {
-    setShowCommunitiesSidebar(false);
-    setShowChannelsSidebar(false);
-  }, [activeCommunity, activeChannel, navigate]);
-
-  const handleLogoClick = () => {
-    setActiveCommunity(null);
-    setActiveChannel(null);
-    navigate('/');
-  };
-
-  const handleCommunityClick = (commId) => {
-    setActiveCommunity(commId);
-    const selectedCommunity = communitiesData.find(comm => comm.id === commId);
-    if (selectedCommunity && selectedCommunity.channels && selectedCommunity.channels.length > 0) {
-      const firstTextChannel = selectedCommunity.channels.find(c => c.type === 'text');
-      if (firstTextChannel) {
-        setActiveChannel(firstTextChannel.id);
-        navigate(`/${commId}/${firstTextChannel.id}`);
-      } else { 
+    const handleCommunityClick = (commId) => {
+        setActiveCommunity(commId);
+        const selectedCommunity = communitiesData.find(comm => comm.id === commId);
+        if (selectedCommunity && selectedCommunity.channels && selectedCommunity.channels.length > 0) {
+        const firstTextChannel = selectedCommunity.channels.find(c => c.type === 'text');
+        if (firstTextChannel) {
+            setActiveChannel(firstTextChannel.id);
+            navigate(`/${commId}/${firstTextChannel.id}`);
+        } else { 
+            setActiveChannel(null);
+            navigate(`/${commId}`);
+        }
+        } else {
         setActiveChannel(null);
         navigate(`/${commId}`);
-      }
-    } else {
-      setActiveChannel(null);
-      navigate(`/${commId}`);
-    }
-  };
+        }
+    };
 
-  const handleChannelClick = (commId, chanId) => {
-    setActiveChannel(chanId);
-    navigate(`/${commId}/${chanId}`);
-  };
+    const handleChannelClick = (commId, chanId) => {
+        setActiveChannel(chanId);
+        navigate(`/${commId}/${chanId}`);
+    };
 
-  return (
-    <AppLayout className="AppLayout">
-      {(isAuthenticated && window.location.pathname !== '/login' && window.location.pathname !== '/register') && (
-        <>
-            <MobileHeader className="MobileHeader">
-              <MenuButton onClick={() => setShowCommunitiesSidebar(!showCommunitiesSidebar)}>☰</MenuButton>
-              <MobileTitle>
-                {activeCommunity ? communitiesData.find(c => c.id === activeCommunity)?.name : 'Plataforma RPG'}
-                {activeChannel && activeChannel !== 'global' ? ` / #${communitiesData.find(c => c.id === activeCommunity)?.channels?.find(c => c.id === activeChannel)?.name}` : ''}
-              </MobileTitle>
-              <MenuButton onClick={() => setShowChannelsSidebar(!showChannelsSidebar)}>Canais</MenuButton>
-            </MobileHeader>
+    return (
+        <AppLayout className="AppLayout">
+            {(isAuthenticated && window.location.hash !== '#/login' && window.location.hash !== '#/register') && (
+                <>
+                    <MobileHeader className="MobileHeader">
+                        <MenuButton onClick={() => setShowCommunitiesSidebar(!showCommunitiesSidebar)}>☰</MenuButton>
+                        <MobileTitle>
+                            {activeCommunity ? communitiesData.find(c => c.id === activeCommunity)?.name : 'Plataforma RPG'}
+                            {activeChannel && activeChannel !== 'global' ? ` / #${communitiesData.find(c => c.id === activeCommunity)?.channels?.find(c => c.id === activeChannel)?.name}` : ''}
+                        </MobileTitle>
+                        <MenuButton onClick={() => setShowChannelsSidebar(!showChannelsSidebar)}>Canais</MenuButton>
+                    </MobileHeader>
 
-            <CommunitiesSidebar className={`CommunitiesSidebar ${showCommunitiesSidebar ? 'mobile-open-communities' : ''}`}>
-                <AppLogo onClick={handleLogoClick}>RPG</AppLogo>
-                {communitiesData.map(community => (
-                <CommunityItem
-                    key={community.id}
-                    active={activeCommunity === community.id}
-                    onClick={() => handleCommunityClick(community.id)}
-                >
-                    {community.icon}
-                </CommunityItem>
-                ))}
-            </CommunitiesSidebar>
-
-            { activeCommunity && activeCommunity !== 'global' && (
-                <ChannelsSidebar className={`ChannelsSidebar ${showChannelsSidebar ? 'mobile-open-channels' : ''}`}>
-                    <SidebarHeader>{communitiesData.find(c => c.id === activeCommunity)?.name}</SidebarHeader>
-                    {communitiesData.find(c => c.id === activeCommunity)?.channels && (
-                    <>
-                        <ChannelCategory>CANAIS DE TEXTO</ChannelCategory> 
-                        {communitiesData.find(c => c.id === activeCommunity).channels.filter(c => c.type === 'text').map(channel => (
-                        <ChannelItem key={channel.id} active={activeChannel === channel.id} onClick={() => handleChannelClick(activeCommunity, channel.id)}>#{channel.name}</ChannelItem>
+                    <CommunitiesSidebar className={`CommunitiesSidebar ${showCommunitiesSidebar ? 'mobile-open-communities' : ''}`}>
+                        <AppLogo onClick={handleLogoClick}>RPG</AppLogo>
+                        {communitiesData.map(community => (
+                        <CommunityItem key={community.id} active={activeCommunity === community.id} onClick={() => handleCommunityClick(community.id)}>
+                            {community.icon}
+                        </CommunityItem>
                         ))}
-                        <ChannelCategory>CANAIS DE VOZ</ChannelCategory> 
-                        {communitiesData.find(c => c.id === activeCommunity).channels.filter(c => c.type === 'voice').map(channel => (
-                        <ChannelItem key={channel.id} active={activeChannel === channel.id} onClick={() => handleChannelClick(activeCommunity, channel.id)}>🔊 {channel.name}</ChannelItem>
-                        ))}
-                    </>
+                    </CommunitiesSidebar>
+
+                    { activeCommunity && activeCommunity !== 'global' && (
+                        <ChannelsSidebar className={`ChannelsSidebar ${showChannelsSidebar ? 'mobile-open-channels' : ''}`}>
+                            <SidebarHeader>{communitiesData.find(c => c.id === activeCommunity)?.name}</SidebarHeader>
+                            {communitiesData.find(c => c.id === activeCommunity)?.channels && (
+                            <>
+                                <ChannelCategory>CANAIS DE TEXTO</ChannelCategory> 
+                                {communitiesData.find(c => c.id === activeCommunity).channels.filter(c => c.type === 'text').map(channel => (
+                                <ChannelItem key={channel.id} active={activeChannel === channel.id} onClick={() => handleChannelClick(activeCommunity, channel.id)}>#{channel.name}</ChannelItem>
+                                ))}
+                                <ChannelCategory>CANAIS DE VOZ</ChannelCategory> 
+                                {communitiesData.find(c => c.id === activeCommunity).channels.filter(c => c.type === 'voice').map(channel => (
+                                <ChannelItem key={channel.id} active={activeChannel === channel.id} onClick={() => handleChannelClick(activeCommunity, channel.id)}>🔊 {channel.name}</ChannelItem>
+                                ))}
+                            </>
+                            )}
+                        </ChannelsSidebar>
                     )}
-                </ChannelsSidebar>
+                </>
             )}
-        </>
-      )}
 
-      <ContentArea className="ContentArea">
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/" element={isAuthenticated ? <Home /> : <Navigate to="/login" replace />} />
-          <Route path="/global/global" element={isAuthenticated ? <ChatGlobal currentUser={currentUser} /> : <Navigate to="/login" replace />} />
-          <Route path="/:communityId/:channelId" element={isAuthenticated ? <ChatCommunity socketServerUrl={SOCKET_SERVER_URL} currentUser={currentUser} messagesData={communitiesData} /> : <Navigate to="/login" replace />} />
-        </Routes>
-      </ContentArea>
-    </AppLayout>
+            <ContentArea className="ContentArea">
+                <Routes>
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/register" element={<Register />} />
+                    <Route path="/" element={isAuthenticated ? <Home /> : <Navigate to="/login" replace />} />
+                    <Route path="/global/global" element={isAuthenticated ? <ChatGlobal currentUser={currentUser} /> : <Navigate to="/login" replace />} />
+                    <Route path="/:communityId/:channelId" element={isAuthenticated ? <ChatCommunity socketServerUrl={SOCKET_SERVER_URL} currentUser={currentUser} messagesData={communitiesData} /> : <Navigate to="/login" replace />} />
+                </Routes>
+            </ContentArea>
+        </AppLayout>
+    );
+}
+
+// O componente principal agora só envolve o AppContent com o Router
+function App() {
+  return (
+    <Router>
+      <AppContent />
+    </Router>
   );
 }
 
-// ... Estilos ...
+// --- Estilos (Não mudam) ---
+
 const AppLayout = styled.div`
   display: flex;
   height: 100vh;
@@ -296,5 +292,4 @@ const MenuButton = styled.button`
   cursor: pointer;
 `;
 
-// EXPORTAMOS O APPWRAPPER COMO PADRÃO
-export default AppWrapper;
+export default App;
