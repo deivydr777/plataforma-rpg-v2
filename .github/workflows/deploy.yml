@@ -17,7 +17,6 @@ concurrency:
 
 jobs:
   deploy:
-    # Adicionando o environment recomendado
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -29,16 +28,26 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18
+
+      # CORREÇÃO AQUI: Dizendo ao comando para rodar DENTRO da pasta 'frontend'
       - name: Install Dependencies
         run: npm install
+        working-directory: ./frontend
+
+      # CORREÇÃO AQUI: Dizendo ao comando para rodar DENTRO da pasta 'frontend'
       - name: Build
         run: npm run build
+        working-directory: ./frontend
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './build'
+          # CORREÇÃO AQUI: O caminho para a pasta 'build' também precisa ser ajustado
+          path: './frontend/build'
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
