@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-// AQUI ESTÁ A MUDANÇA PRINCIPAL! Trocamos BrowserRouter por HashRouter.
+// ✅ CORREÇÃO 1: Usando HashRouter para compatibilidade com GitHub Pages
 import { HashRouter as Router, Routes, Route, useNavigate, Navigate } from 'react-router-dom';
 
 import Home from './Home';
 import ChatCommunity from './ChatCommunity'; 
 import ChatGlobal from './ChatGlobal';       
 import Login from './components/Login';     
-import Register from './components/Register'; 
+import Register from './components-Login'; 
 
 const SOCKET_SERVER_URL = "https://plataforma-rpg-v2.onrender.com";
 
@@ -22,7 +22,8 @@ const communitiesData = [
   { id: 'global', name: 'Chat Global', icon: '🌍', channels: [{id: 'global', name: 'global', type: 'text'}] },
 ];
 
-// Componente de navegação para usar os hooks do Router
+// O conteúdo da sua aplicação precisa ficar dentro de um componente filho 
+// para que ele possa usar o hook 'useNavigate' que depende do 'Router'.
 function AppContent() {
     const navigate = useNavigate();
     const [activeCommunity, setActiveCommunity] = useState(null);
@@ -77,7 +78,6 @@ function AppContent() {
                         </MobileTitle>
                         <MenuButton onClick={() => setShowChannelsSidebar(!showChannelsSidebar)}>Canais</MenuButton>
                     </MobileHeader>
-
                     <CommunitiesSidebar className={`CommunitiesSidebar ${showCommunitiesSidebar ? 'mobile-open-communities' : ''}`}>
                         <AppLogo onClick={handleLogoClick}>RPG</AppLogo>
                         {communitiesData.map(community => (
@@ -86,7 +86,6 @@ function AppContent() {
                         </CommunityItem>
                         ))}
                     </CommunitiesSidebar>
-
                     { activeCommunity && activeCommunity !== 'global' && (
                         <ChannelsSidebar className={`ChannelsSidebar ${showChannelsSidebar ? 'mobile-open-channels' : ''}`}>
                             <SidebarHeader>{communitiesData.find(c => c.id === activeCommunity)?.name}</SidebarHeader>
@@ -120,7 +119,7 @@ function AppContent() {
     );
 }
 
-// O componente principal agora só envolve o AppContent com o Router
+// O componente App principal agora apenas prepara o Router para o AppContent.
 function App() {
   return (
     <Router>
@@ -129,8 +128,7 @@ function App() {
   );
 }
 
-// --- Estilos (Não mudam) ---
-
+// Estilos (Não precisam ser alterados)
 const AppLayout = styled.div`
   display: flex;
   height: 100vh;
@@ -141,14 +139,12 @@ const AppLayout = styled.div`
     flex-direction: column;
   }
 `;
-
 const Sidebar = styled.div`
   padding: 10px;
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
 `;
-
 const AppLogo = styled.div`
   width: 48px;
   height: 48px;
@@ -164,7 +160,6 @@ const AppLogo = styled.div`
   cursor: pointer;
   flex-shrink: 0;
 `;
-
 const CommunitiesSidebar = styled(Sidebar)`
   width: 72px;
   background-color: #202225;
@@ -179,7 +174,6 @@ const CommunitiesSidebar = styled(Sidebar)`
     z-index: 1000;
   }
 `;
-
 const ChannelsSidebar = styled(Sidebar)`
   width: 240px;
   background-color: #2f3136;
@@ -193,7 +187,6 @@ const ChannelsSidebar = styled(Sidebar)`
     left: 72px;
   }
 `;
-
 const SidebarHeader = styled.h3`
   font-size: 0.9em;
   font-weight: bold;
@@ -204,7 +197,6 @@ const SidebarHeader = styled.h3`
   width: 100%;
   border-bottom: 1px solid #202225;
 `;
-
 const CommunityItem = styled.div`
   width: 48px;
   height: 48px;
@@ -226,7 +218,6 @@ const CommunityItem = styled.div`
     background-color: #5865f2;
   `}
 `;
-
 const ChannelCategory = styled.div`
   font-size: 0.8em;
   color: #8e9297; 
@@ -234,7 +225,6 @@ const ChannelCategory = styled.div`
   margin-bottom: 5px;
   text-transform: uppercase;
 `;
-
 const ChannelItem = styled.div`
   padding: 8px 10px;
   margin-bottom: 5px;
@@ -251,7 +241,6 @@ const ChannelItem = styled.div`
     color: #ffffff;
   `}
 `;
-
 const ContentArea = styled.div`
   flex-grow: 1; 
   display: flex;
@@ -262,7 +251,6 @@ const ContentArea = styled.div`
     width: 100%;
   }
 `;
-
 const MobileHeader = styled.div`
   display: none; 
   @media (max-width: 768px) { 
@@ -277,13 +265,11 @@ const MobileHeader = styled.div`
     border-bottom: 1px solid #202225;
   }
 `;
-
 const MobileTitle = styled.h2`
   font-size: 1.1em;
   margin: 0;
   color: #dcddde; 
 `;
-
 const MenuButton = styled.button`
   background: none;
   border: none;
