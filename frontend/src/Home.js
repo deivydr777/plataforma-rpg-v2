@@ -1,71 +1,151 @@
 import React from 'react';
 import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom';
 
-function Home({ toggleCommunitiesSidebar, toggleChannelsSidebar }) {
+function Home() {
+  const navigate = useNavigate();
+
   return (
-    <HomeContainer>
-      <MobileHeader>
-        <MenuButton onClick={toggleCommunitiesSidebar}>☰ Comunidades</MenuButton>
-        <MenuButton onClick={toggleChannelsSidebar}>Canais</MenuButton>
-      </MobileHeader>
-      <HomeTitle>Bem-vindo à Plataforma de RPG!</HomeTitle>
-      <HomeText>Selecione uma comunidade e um canal ao lado para começar sua aventura.</HomeText>
-      <HomeText>Em breve, funcionalidades de chat real, comunidades personalizadas e IA.</HomeText>
-    </HomeContainer>
+    <LobbyContainer>
+      <Header>
+        <Title>Bem-vindo à Plataforma RPG</Title>
+        <Subtitle>Seu ponto de partida para novas aventuras.</Subtitle>
+      </Header>
+      
+      <CardsContainer>
+        <ActionCard onClick={() => navigate('/global/global')}>
+          <CardIcon>🌍</CardIcon>
+          <CardTitle>Chat Global</CardTitle>
+          <CardDescription>Converse com todos os jogadores da plataforma, compartilhe ideias e encontre novos grupos.</CardDescription>
+        </ActionCard>
+
+        <ActionCard>
+          <CardIcon>🔗</CardIcon>
+          <CardTitle>Entrar em uma Comunidade</CardTitle>
+          <CardDescription>Recebeu um convite? Cole o link abaixo para se juntar a uma comunidade existente.</CardDescription>
+          <Input placeholder="Cole o link de convite..." />
+          <Button disabled>Entrar</Button>
+        </ActionCard>
+
+        <ActionCard>
+          <CardIcon>➕</CardIcon>
+          <CardTitle>Criar sua Comunidade</CardTitle>
+          <CardDescription>Seja o mestre de sua própria aventura. Crie sua comunidade e convide seus amigos.</CardDescription>
+           <Button disabled>Criar (em breve)</Button>
+        </ActionCard>
+      </CardsContainer>
+    </LobbyContainer>
   );
 }
 
-const HomeContainer = styled.div`
+// --- Estilos para o Lobby ---
+
+const LobbyContainer = styled.div`
+  flex-grow: 1;
+  padding: 40px;
+  background-color: #36393f;
+  color: #dcddde;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-  flex-grow: 1;
-  padding: 20px;
-  text-align: center;
-  background-color: #36393f; /* Corrigido para valor real */
+  overflow-y: auto;
 `;
 
-const HomeTitle = styled.h2`
-  font-size: 2em;
-  margin-bottom: 15px;
+const Header = styled.div`
+  text-align: center;
+  margin-bottom: 40px;
+`;
+
+const Title = styled.h1`
+  font-size: 2.5em;
+  margin-bottom: 10px;
   color: #ffffff;
 `;
-
-const HomeText = styled.p`
-  font-size: 1.1em;
-  color: #dcddde; /* Corrigido para valor real */
-  margin-bottom: 10px;
-  max-width: 600px;
+const Subtitle = styled.p`
+  font-size: 1.2em;
+  color: #b9bbbe;
 `;
 
-// Estilos do MobileHeader e MenuButton (copiados do App.js para este componente)
-const MobileHeader = styled.div`
-  display: none; 
-  @media (max-width: 768px) { 
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 10px;
-    background-color: #202225;
-    color: #dcddde;
-    height: 48px;
-    flex-shrink: 0;
-    width: 100%; 
-    position: absolute; 
-    top: 0;
-    left: 0;
-    z-index: 100; 
+const CardsContainer = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+  width: 100%;
+  max-width: 1200px;
+`;
+
+const ActionCard = styled.div`
+  background-color: #2f3136;
+  border-radius: 8px;
+  padding: 25px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  border: 1px solid #202225;
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: ${props => (props.onClick ? 'pointer' : 'default')};
+
+  &:hover {
+    ${props => props.onClick && `
+      transform: translateY(-5px);
+      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+    `}
   }
 `;
 
-const MenuButton = styled.button`
-  background: none;
-  border: none;
-  color: #dcddde;
+const CardIcon = styled.div`
+  font-size: 3em;
+  margin-bottom: 15px;
+`;
+
+const CardTitle = styled.h3`
   font-size: 1.5em;
+  color: #ffffff;
+  margin-bottom: 10px;
+`;
+
+const CardDescription = styled.p`
+  color: #b9bbbe;
+  line-height: 1.5;
+  flex-grow: 1;
+  margin-bottom: 20px;
+`;
+
+const Input = styled.input`
+  width: 100%;
+  padding: 12px;
+  border-radius: 5px;
+  border: 1px solid #202225;
+  background-color: #40444b;
+  color: #dcddde;
+  margin-bottom: 10px;
+
+  &::placeholder {
+    color: #8e9297;
+  }
+`;
+
+const Button = styled.button`
+  width: 100%;
+  padding: 12px;
+  border-radius: 5px;
+  border: none;
+  background-color: #5865f2;
+  color: white;
+  font-weight: bold;
   cursor: pointer;
-  padding: 5px;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: #4752c4;
+  }
+  
+  &:disabled {
+    background-color: #40444b;
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
 `;
 
 export default Home;
