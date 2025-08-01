@@ -1,107 +1,94 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { Routes, Route, useNavigate, Navigate, useLocation } from 'react-router-dom';
+import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 
+// Importando os componentes de página
 import Home from './Home';
-import ChatCommunity from './ChatCommunity'; 
-import ChatGlobal from './ChatGlobal';       
-import Login from './components/Login';     
-import Register from './components/Register'; 
+import ChatGlobal from './ChatGlobal';
+import ChatCommunity from './ChatCommunity';
+import Login from './components/Login';
+import Register from './components/Register';
 
-const SOCKET_SERVER_URL = "https://plataforma-rpg-v2.onrender.com";
-
+// Dados Falsos (Mock Data)
 const currentUser = {
   id: 'user123',
-  name: 'Aventureiro Destemido',
-  avatar: 'https://via.placeholder.com/40/FF0000/FFFFFF?text=AV', 
-  roles: ['Jogador'],
+  name: 'Aventureiro',
+  avatar: 'https://via.placeholder.com/40'
 };
-
 const communitiesData = [
-  { id: 'global', name: 'Chat Global', icon: '🌍', channels: [{id: 'global', name: 'global', type: 'text'}] },
+  { id: 'global', name: 'Chat Global', icon: '🌍', channels: [{id: 'global', name: 'global', type: 'text'}]}
 ];
 
 function App() {
   const navigate = useNavigate();
-  const location = useLocation(); // Hook para saber a rota atual
-  const [activeCommunity, setActiveCommunity] = useState(null);
-  const [activeChannel, setActiveChannel] = useState(null);
-  const [showCommunitiesSidebar, setShowCommunitiesSidebar] = useState(false);
-  const [showChannelsSidebar, setShowChannelsSidebar] = useState(false);
+  const location = useLocation();
   const [isAuthenticated, setIsAuthenticated] = useState(true);
 
-  useEffect(() => {
-    setShowCommunitiesSidebar(false);
-    setShowChannelsSidebar(false);
-  }, [location.pathname]); // Fecha os menus ao navegar
+  // Lógica de navegação principal
+  const goToHome = () => navigate('/');
+  const goToGlobalChat = () => navigate('/global/global');
 
-  const handleLogoClick = () => {
-    setActiveCommunity(null);
-    setActiveChannel(null);
-    navigate('/');
-  };
-
-  const handleCommunityClick = (commId) => {
-    setActiveCommunity(commId);
-    const selectedCommunity = communitiesData.find(comm => comm.id === commId);
-    if (selectedCommunity && selectedCommunity.channels?.[0]) {
-      const firstChannelId = selectedCommunity.channels[0].id;
-      setActiveChannel(firstChannelId);
-      navigate(`/${commId}/${firstChannelId}`);
-    }
-  };
-
-  const shouldShowSidebars = isAuthenticated && location.pathname !== '/login' && location.pathname !== '/register';
+  // Determina se as barras de navegação devem ser mostradas
+  const shouldShowNav = isAuthenticated && location.pathname !== '/login' && location.pathname !== '/register';
 
   return (
     <AppLayout>
-      {shouldShowSidebars && (
-        <>
-          <MobileHeader>
-            <MenuButton onClick={() => setShowCommunitiesSidebar(s => !s)}>☰</MenuButton>
-            <MobileTitle>Plataforma RPG</MobileTitle>
-          </MobileHeader>
-          
-          <CommunitiesSidebar className={showCommunitiesSidebar ? 'mobile-open' : ''}>
-            <AppLogo onClick={handleLogoClick}>RPG</AppLogo>
-            {communitiesData.map(community => (
-              <CommunityItem key={community.id} active={activeCommunity === community.id} onClick={() => handleCommunityClick(community.id)}>
-                {community.icon}
-              </CommunityItem>
-            ))}
-          </CommunitiesSidebar>
-        </>
+      {/* Barra de Navegação Esquerda (Comunidades) */}
+      {shouldShowNav && (
+        <CommunitiesSidebar>
+          <AppLogo onClick={goToHome}>RPG</AppLogo>
+          <CommunityItem onClick={goToGlobalChat} active={location.pathname.startsWith('/global')}>
+            🌍
+          </CommunityItem>
+        </CommunitiesSidebar>
       )}
 
+      {/* Área de Conteúdo Principal */}
       <ContentArea>
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/" element={isAuthenticated ? <Home /> : <Navigate to="/login" replace />} />
-          <Route path="/global/global" element={isAuthenticated ? <ChatGlobal currentUser={currentUser} /> : <Navigate to="/login" replace />} />
-          <Route path="/:communityId/:channelId" element={isAuthenticated ? <ChatCommunity currentUser={currentUser} /> : <Navigate to="/login" replace />} />
+          
+          {/* Se estiver autenticado, mostra as rotas principais. Senão, redireciona para o login. */}
+          {isAuthenticated ? (
+            <>
+              <Route path="/" element={<Home />} />
+              <Route path="/global/:channelId" element={<ChatGlobal currentUser={currentUser} />} />
+              <Route path="/:communityId/:channelId" element={<ChatCommunity currentUser={currentUser} />} />
+            </>
+          ) : (
+            <Route path="*" element={<Navigate to="/login" replace />} />
+          )}
+
         </Routes>
       </ContentArea>
     </AppLayout>
   );
 }
 
-// Estilos
+// --- ESTILOS --- (Simplificados para garantir que não quebrem)
+
 const AppLayout = styled.div`
   display: flex;
   height: 100vh;
+  width: 100vw;
   background-color: #36393f;
   color: #dcddde;
-  @media (max-width: 768px) {
-    flex-direction: column;
-  }
 `;
 
 const Sidebar = styled.div`
-  padding: 10px;
   display: flex;
   flex-direction: column;
+  padding: 10px;
   flex-shrink: 0;
+  background-color: #202225;
+  align-items: center;
+  gap: 8px;
+  padding-top: 12px;
+`;
+
+const CommunitiesSidebar = styled(Sidebar)`
+  width: 72px;
 `;
 
 const AppLogo = styled.div`
@@ -120,24 +107,6 @@ const AppLogo = styled.div`
   flex-shrink: 0;
 `;
 
-const CommunitiesSidebar = styled(Sidebar)`
-  width: 72px;
-  background-color: #202225;
-  align-items: center;
-  gap: 8px;
-  padding-top: 12px;
-  @media (max-width: 768px) {
-    position: absolute;
-    left: -100%;
-    height: 100vh;
-    z-index: 1000;
-    transition: left 0.3s ease-in-out;
-    &.mobile-open {
-      left: 0;
-    }
-  }
-`;
-
 const CommunityItem = styled.div`
   width: 48px;
   height: 48px;
@@ -148,55 +117,24 @@ const CommunityItem = styled.div`
   align-items: center;
   font-size: 1.5em;
   cursor: pointer;
-  transition: border-radius 0.2s, background-color 0.2s;
+  transition: all 0.2s;
+  
   &:hover {
     border-radius: 30%;
     background-color: #5865f2;
   }
+  
   ${props => props.active && `
     border-radius: 30%;
     background-color: #5865f2;
   `}
 `;
 
-const ContentArea = styled.div`
+const ContentArea = styled.main`
   flex-grow: 1;
   display: flex;
   flex-direction: column;
-  background-color: #36393f;
   overflow-y: auto;
-  @media (max-width: 768px) {
-    width: 100%;
-  }
-`;
-
-const MobileHeader = styled.div`
-  display: none;
-  @media (max-width: 768px) {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 10px;
-    background-color: #2f3136;
-    height: 48px;
-    flex-shrink: 0;
-    width: 100%;
-    border-bottom: 1px solid #202225;
-  }
-`;
-
-const MobileTitle = styled.h2`
-  font-size: 1.1em;
-  margin: 0;
-  color: #dcddde;
-`;
-
-const MenuButton = styled.button`
-  background: none;
-  border: none;
-  color: #dcddde;
-  font-size: 1.5em;
-  cursor: pointer;
 `;
 
 export default App;
