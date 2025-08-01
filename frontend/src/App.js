@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { Routes, Route, useNavigate, Navigate, Link } from 'react-router-dom';
+import { Routes, Route, useNavigate, Navigate } from 'react-router-dom';
 
 import Home from './Home';
 import ChatCommunity from './ChatCommunity'; 
@@ -8,7 +8,7 @@ import ChatGlobal from './ChatGlobal';
 import Login from './components/Login';     
 import Register from './components/Register'; 
 
-const SOCKET_SERVER_URL = "https://plataforma-rpg-v2.onrender.com"; // <-- SEU URL REAL AQUI!
+const SOCKET_SERVER_URL = "https://plataforma-rpg-v2.onrender.com";
 
 const currentUser = {
   id: 'user123',
@@ -17,18 +17,9 @@ const currentUser = {
   roles: ['Jogador'],
 };
 
+// LISTA DE COMUNIDADES ATUALIZADA - SÓ TEM O CHAT GLOBAL
 const communitiesData = [
-  { id: 'global', name: 'Chat Global', icon: '🌍' },
-  { id: 'hogwarts', name: 'Hogwarts RPG', icon: '🧙‍♂️', channels: [
-    { id: 'geral', name: 'geral', type: 'text' },
-    { id: 'taverna', name: 'taverna-dos-tres-vassouras', type: 'text' },
-    { id: 'sala-precisa', name: 'sala-precisa', type: 'text' },
-    { id: 'salao-principal', name: 'Salão Principal', type: 'voice' },
-  ]},
-  { id: 'terras-proibidas', name: 'Terras Proibidas', icon: '⚔️', channels: [
-    { id: 'floresta', name: 'floresta-sombria', type: 'text' },
-    { id: 'montanha', name: 'pico-do-dragao', type: 'text' },
-  ]},
+  { id: 'global', name: 'Chat Global', icon: '🌍', channels: [{id: 'global', name: 'global', type: 'text'}] },
 ];
 
 function App() {
@@ -37,54 +28,21 @@ function App() {
   const [activeChannel, setActiveChannel] = useState(null);
   const [showCommunitiesSidebar, setShowCommunitiesSidebar] = useState(false);
   const [showChannelsSidebar, setShowChannelsSidebar] = useState(false);
-  
-  // AQUI ESTÁ A MUDANÇA! O usuário agora começa "logado".
   const [isAuthenticated, setIsAuthenticated] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    // Se você quiser manter a lógica de token, pode deixar, mas com o estado inicial true, ele já entra direto.
-    // setIsAuthenticated(!!token); 
-
-    if (token && (window.location.pathname === '/login' || window.location.pathname === '/register')) {
-      navigate('/hogwarts/geral', { replace: true });
-    }
-  }, [navigate]);
-
-  const handleAuthSuccess = () => {
-    setIsAuthenticated(true);
-  };
-
-  const handleLogout = () => {
-    // Para deslogar, agora teríamos que mudar o estado para false
-    // localStorage.removeItem('token');
-    setIsAuthenticated(false);
-    navigate('/login');
-  };
-
-  useEffect(() => {
+    // Lógica para esconder as sidebars quando a rota muda
     setShowCommunitiesSidebar(false);
     setShowChannelsSidebar(false);
-  }, [activeCommunity, activeChannel]);
+  }, [activeCommunity, activeChannel, navigate]);
 
   const handleLogoClick = () => {
-    if (!isAuthenticated) {
-      navigate('/login');
-      return;
-    }
     setActiveCommunity(null);
     setActiveChannel(null);
     navigate('/');
-    setShowCommunitiesSidebar(false);
-    setShowChannelsSidebar(false);
   };
 
   const handleCommunityClick = (commId) => {
-    if (!isAuthenticated) {
-      navigate('/login');
-      return;
-    }
-
     setActiveCommunity(commId);
     const selectedCommunity = communitiesData.find(comm => comm.id === commId);
     if (selectedCommunity && selectedCommunity.channels && selectedCommunity.channels.length > 0) {
@@ -100,123 +58,74 @@ function App() {
       setActiveChannel(null);
       navigate(`/${commId}`);
     }
-    setShowCommunitiesSidebar(false); 
-    setShowChannelsSidebar(true);
   };
 
   const handleChannelClick = (commId, chanId) => {
-    if (!isAuthenticated) {
-      navigate('/login');
-      return;
-    }
-    
     setActiveChannel(chanId);
     navigate(`/${commId}/${chanId}`);
-    setShowChannelsSidebar(false);
   };
 
   return (
     <AppLayout className="AppLayout">
-      {(isAuthenticated || window.location.pathname === '/login' || window.location.pathname === '/register') && (
-        <MobileHeader className="MobileHeader">
-          <MenuButton onClick={() => setShowCommunitiesSidebar(!showCommunitiesSidebar)}>
-            ☰
-          </MenuButton>
-          <MobileTitle>
-            {activeCommunity ? communitiesData.find(c => c.id === activeCommunity)?.name : 'Plataforma RPG'}
-            {activeChannel ? ` / #${communitiesData.find(c => c.id === activeCommunity)?.channels?.find(c => c.id === activeChannel)?.name}` : ''}
-          </MobileTitle>
-          <MenuButton onClick={() => setShowChannelsSidebar(!showChannelsSidebar)}>
-            Canais
-          </MenuButton>
-        </MobileHeader>
-      )}
-
-      {isAuthenticated ? (
+      {(isAuthenticated && window.location.pathname !== '/login' && window.location.pathname !== '/register') && (
         <>
-          <CommunitiesSidebar className={`CommunitiesSidebar ${showCommunitiesSidebar ? 'mobile-open-communities' : ''}`}>
-            <AppLogo onClick={handleLogoClick}>RPG</AppLogo>
-            <SidebarHeader>Comunidades</SidebarHeader>
-            {communitiesData.map(community => (
-              <CommunityItem
-                key={community.id}
-                active={activeCommunity === community.id}
-                onClick={() => handleCommunityClick(community.id)}
-              >
-                {community.icon}
-              </CommunityItem>
-            ))}
-          </CommunitiesSidebar>
+            <MobileHeader className="MobileHeader">
+              <MenuButton onClick={() => setShowCommunitiesSidebar(!showCommunitiesSidebar)}>☰</MenuButton>
+              <MobileTitle>
+                {activeCommunity ? communitiesData.find(c => c.id === activeCommunity)?.name : 'Plataforma RPG'}
+                {activeChannel && activeChannel !== 'global' ? ` / #${communitiesData.find(c => c.id === activeCommunity)?.channels?.find(c => c.id === activeChannel)?.name}` : ''}
+              </MobileTitle>
+              <MenuButton onClick={() => setShowChannelsSidebar(!showChannelsSidebar)}>Canais</MenuButton>
+            </MobileHeader>
 
-          <ChannelsSidebar className={`ChannelsSidebar ${showChannelsSidebar ? 'mobile-open-channels' : ''}`}>
-            <SidebarHeader>
-              {activeCommunity ? communitiesData.find(c => c.id === activeCommunity)?.name : 'Selecione'}
-            </SidebarHeader>
-            {activeCommunity && communitiesData.find(c => c.id === activeCommunity)?.channels && (
-              <>
-                <ChannelCategory>CANAIS DE TEXTO</ChannelCategory> 
-                {communitiesData.find(c => c.id === activeCommunity).channels.filter(c => c.type === 'text').map(channel => (
-                  <ChannelItem
-                    key={channel.id}
-                    active={activeChannel === channel.id}
-                    onClick={() => handleChannelClick(activeCommunity, channel.id)}
-                  >
-                    #{channel.name}
-                  </ChannelItem>
+            <CommunitiesSidebar className={`CommunitiesSidebar ${showCommunitiesSidebar ? 'mobile-open-communities' : ''}`}>
+                <AppLogo onClick={handleLogoClick}>RPG</AppLogo>
+                {communitiesData.map(community => (
+                <CommunityItem
+                    key={community.id}
+                    active={activeCommunity === community.id}
+                    onClick={() => handleCommunityClick(community.id)}
+                >
+                    {community.icon}
+                </CommunityItem>
                 ))}
-                <ChannelCategory>CANAIS DE VOZ</ChannelCategory> 
-                {communitiesData.find(c => c.id === activeCommunity).channels.filter(c => c.type === 'voice').map(channel => (
-                  <ChannelItem
-                    key={channel.id}
-                    active={activeChannel === channel.id}
-                    onClick={() => handleChannelClick(activeCommunity, channel.id)}
-                  >
-                    🔊 {channel.name}
-                  </ChannelItem>
-                ))}
-              </>
+            </CommunitiesSidebar>
+
+            { activeCommunity && activeCommunity !== 'global' && (
+                <ChannelsSidebar className={`ChannelsSidebar ${showChannelsSidebar ? 'mobile-open-channels' : ''}`}>
+                    <SidebarHeader>{communitiesData.find(c => c.id === activeCommunity)?.name}</SidebarHeader>
+                    {communitiesData.find(c => c.id === activeCommunity)?.channels && (
+                    <>
+                        <ChannelCategory>CANAIS DE TEXTO</ChannelCategory> 
+                        {communitiesData.find(c => c.id === activeCommunity).channels.filter(c => c.type === 'text').map(channel => (
+                        <ChannelItem key={channel.id} active={activeChannel === channel.id} onClick={() => handleChannelClick(activeCommunity, channel.id)}>#{channel.name}</ChannelItem>
+                        ))}
+                        <ChannelCategory>CANAIS DE VOZ</ChannelCategory> 
+                        {communitiesData.find(c => c.id === activeCommunity).channels.filter(c => c.type === 'voice').map(channel => (
+                        <ChannelItem key={channel.id} active={activeChannel === channel.id} onClick={() => handleChannelClick(activeCommunity, channel.id)}>🔊 {channel.name}</ChannelItem>
+                        ))}
+                    </>
+                    )}
+                </ChannelsSidebar>
             )}
-          </ChannelsSidebar>
         </>
-      ) : (
-        <></>
       )}
 
       <ContentArea className="ContentArea">
         <Routes>
-          {/* Rotas de Autenticação (sempre acessíveis) */}
-          <Route path="/login" element={<Login onLoginSuccess={handleAuthSuccess} />} />
-          <Route path="/register" element={<Register onRegisterSuccess={handleAuthSuccess} />} />
-
-          {/* Rotas Protegidas (só acessíveis se isAuthenticated for true) */}
-          <Route path="/" element={isAuthenticated ? <Home 
-            toggleCommunitiesSidebar={() => setShowCommunitiesSidebar(!showCommunitiesSidebar)} 
-            toggleChannelsSidebar={() => setShowChannelsSidebar(!showChannelsSidebar)} 
-          /> : <Navigate to="/login" replace />} />
-          
-          <Route path="/global" element={isAuthenticated ? <ChatGlobal 
-            communityId="global" 
-            channelId="global" 
-            socketServerUrl={SOCKET_SERVER_URL} 
-            currentUser={currentUser}
-            toggleCommunitiesSidebar={() => setShowCommunitiesSidebar(!showCommunitiesSidebar)} 
-            toggleChannelsSidebar={() => setShowChannelsSidebar(!showChannelsSidebar)} 
-          /> : <Navigate to="/login" replace />} />
-          
-          <Route path="/:communityId/:channelId" element={isAuthenticated ? <ChatCommunity 
-            socketServerUrl={SOCKET_SERVER_URL} 
-            currentUser={currentUser} 
-            messagesData={communitiesData} 
-            toggleCommunitiesSidebar={() => setShowCommunitiesSidebar(!showCommunitiesSidebar)} 
-            toggleChannelsSidebar={() => setShowChannelsSidebar(!showChannelsSidebar)} 
-          /> : <Navigate to="/login" replace />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/" element={isAuthenticated ? <Home /> : <Navigate to="/login" replace />} />
+          <Route path="/global/global" element={isAuthenticated ? <ChatGlobal currentUser={currentUser} /> : <Navigate to="/login" replace />} />
+          <Route path="/:communityId/:channelId" element={isAuthenticated ? <ChatCommunity socketServerUrl={SOCKET_SERVER_URL} currentUser={currentUser} messagesData={communitiesData} /> : <Navigate to="/login" replace />} />
         </Routes>
       </ContentArea>
     </AppLayout>
   );
 }
 
-// --- Estilos Usando Styled Components ---
+
+// --- Estilos (Não precisam ser alterados) ---
 
 const AppLayout = styled.div`
   display: flex;
@@ -257,17 +166,13 @@ const CommunitiesSidebar = styled(Sidebar)`
   background-color: #202225;
   align-items: center;
   gap: 8px;
+  padding-top: 12px;
 
   @media (max-width: 768px) {
+    display: ${props => props.className.includes('mobile-open-communities') ? 'flex' : 'none'};
     position: absolute;
     height: 100vh;
     z-index: 1000;
-    box-shadow: 2px 0 5px rgba(0,0,0,0.5);
-    left: -72px; 
-    transition: left 0.3s ease-in-out; 
-  }
-  &.mobile-open-communities {
-    left: 0;
   }
 `;
 
@@ -277,30 +182,23 @@ const ChannelsSidebar = styled(Sidebar)`
   border-right: 1px solid #202225;
 
   @media (max-width: 768px) {
+    display: ${props => props.className.includes('mobile-open-channels') ? 'flex' : 'none'};
     position: absolute;
     height: 100vh;
     z-index: 999;
-    box-shadow: 2px 0 5px rgba(0,0,0,0.5);
-    left: -240px; 
-    border-right: none;
-    transition: left 0.3s ease-in-out; 
-  }
-  &.mobile-open-channels {
-    left: 0;
+    left: 72px;
   }
 `;
 
 const SidebarHeader = styled.h3`
-  font-size: 0.7em;
-  color: #99aab5; 
+  font-size: 0.9em;
+  font-weight: bold;
+  color: #ffffff; 
   margin-bottom: 15px;
-  margin-top: 10px;
-  text-align: center;
+  padding: 10px;
+  text-align: left;
   width: 100%;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  padding: 0 5px;
+  border-bottom: 1px solid #202225;
 `;
 
 const CommunityItem = styled.div`
@@ -331,7 +229,6 @@ const ChannelCategory = styled.div`
   margin-top: 15px;
   margin-bottom: 5px;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
 `;
 
 const ChannelItem = styled.div`
@@ -339,8 +236,6 @@ const ChannelItem = styled.div`
   margin-bottom: 5px;
   border-radius: 5px;
   cursor: pointer;
-  transition: background-color 0.2s, color 0.2s;
-  font-size: 1.1em;
   color: #8e9297; 
 
   &:hover {
@@ -371,13 +266,11 @@ const MobileHeader = styled.div`
     justify-content: space-between;
     align-items: center;
     padding: 0 10px;
-    background-color: #202225; 
-    color: #dcddde; 
+    background-color: #2f3136;
     height: 48px;
     flex-shrink: 0;
     width: 100%;
-    position: relative; 
-    z-index: 50; 
+    border-bottom: 1px solid #202225;
   }
 `;
 
@@ -385,10 +278,6 @@ const MobileTitle = styled.h2`
   font-size: 1.1em;
   margin: 0;
   color: #dcddde; 
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: calc(100% - 100px);
 `;
 
 const MenuButton = styled.button`
@@ -397,7 +286,6 @@ const MenuButton = styled.button`
   color: #dcddde; 
   font-size: 1.5em;
   cursor: pointer;
-  padding: 5px;
 `;
 
 export default App;
