@@ -1,28 +1,32 @@
 import React from 'react';
 import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
+// REMOVEMOS o useNavigate, não precisamos mais dele aqui.
+
+// Componente de Link Estilizado para se parecer com o card
+const CardLink = styled.a`
+  text-decoration: none; /* Remove o sublinhado do link */
+  color: inherit; /* Herda a cor do texto do pai */
+`;
 
 function Home() {
-  const navigate = useNavigate();
-
-  const goToChatGlobal = () => {
-    navigate('/global/global');
-  };
+  // Não precisamos mais da função navigate aqui.
 
   return (
     <LobbyContainer>
       <Header>
-        {/* AQUI ESTÁ A CORREÇÃO QUE FALTAVA */}
         <Title>Bem-vindo à WorldWeaver</Title>
         <Subtitle>Seu ponto de partida para novas aventuras.</Subtitle>
       </Header>
       
       <CardsContainer>
-        <ActionCard onClick={goToChatGlobal}>
-          <CardIcon>📜</CardIcon>
-          <CardTitle>Mural & Chat Global</CardTitle>
-          <CardDescription>Veja os avisos da plataforma, divulgue suas mesas e converse com outros jogadores.</CardDescription>
-        </ActionCard>
+        {/* O ActionCard agora está dentro de um link <a> */}
+        <CardLink href="#/global/global">
+          <ActionCard>
+            <CardIcon>📜</CardIcon>
+            <CardTitle>Mural & Chat Global</CardTitle>
+            <CardDescription>Veja os avisos da plataforma, divulgue suas mesas e converse com outros jogadores.</CardDescription>
+          </ActionCard>
+        </CardLink>
 
         <ActionCard>
           <CardIcon>🔗</CardIcon>
@@ -43,25 +47,24 @@ function Home() {
   );
 }
 
-// --- Estilos para o Lobby ---
+// --- Estilos ---
+// (Os estilos continuam os mesmos da versão anterior que corrigiu a rolagem)
 
 const LobbyContainer = styled.div`
+  flex-grow: 1;
+  padding: 40px 20px;
+  background-color: #36393f;
+  color: #dcddde;
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: #36393f;
-  color: #dcddde;
+  overflow-y: auto; 
   width: 100%;
-  height: 100%;
-  padding: 40px 20px;
-  overflow-y: auto;
-  box-sizing: border-box;
 `;
 
 const Header = styled.div`
   text-align: center;
   margin-bottom: 40px;
-  flex-shrink: 0;
 `;
 
 const Title = styled.h1`
@@ -98,16 +101,14 @@ const ActionCard = styled.div`
   align-items: center;
   text-align: center;
   border: 1px solid #202225;
-  transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
-  cursor: ${props => (props.onClick ? 'pointer' : 'default')};
-  position: relative;
-  z-index: 1;
+  transition: transform 0.2s, box-shadow 0.2s;
+  height: 100%; /* Faz todos os cards terem a mesma altura */
+  box-sizing: border-box;
 
-  &:hover {
-    ${props => props.onClick && `
-      transform: translateY(-5px);
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
-    `}
+  /* O hover agora é no link pai, mas mantemos aqui para o visual */
+  ${CardLink}:hover & {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
   }
 `;
 
@@ -137,8 +138,6 @@ const Input = styled.input`
   background-color: #40444b;
   color: #dcddde;
   margin-bottom: 10px;
-  z-index: 2;
-  position: relative;
 
   &::placeholder {
     color: #8e9297;
@@ -155,8 +154,6 @@ const Button = styled.button`
   font-weight: bold;
   cursor: pointer;
   transition: background-color 0.2s;
-  z-index: 2;
-  position: relative;
 
   &:hover {
     background-color: #4752c4;
