@@ -1,3 +1,17 @@
 {
-  "rootDirectory": "frontend"
+  "builds": [
+    {
+      "src": "frontend/package.json",
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": ["frontend/build/**"]
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "frontend/build/index.html"
+    }
+  ]
 }
