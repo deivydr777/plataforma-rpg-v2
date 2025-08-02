@@ -1,15 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import Home from './Home'; // Importamos a Home diretamente
-import { BrowserRouter } from 'react-router-dom'; // O useNavigate dentro da Home precisa disso
+import App from './App'; // AQUI ESTÁ A MUDANÇA: Importamos o App.js
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    {/* Envolvemos a Home com o BrowserRouter para o 'navigate' não quebrar */}
-    <BrowserRouter>
-      <Home />
-    </BrowserRouter>
+    {/* Renderizamos o componente App, que controla toda a aplicação */}
+    <App />
   </React.StrictMode>
 );
