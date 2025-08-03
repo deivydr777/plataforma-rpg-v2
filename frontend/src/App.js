@@ -2,10 +2,13 @@ import React from 'react';
 import styled from 'styled-components';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
+// Novas Telas
 import HomeScreen from './screens/HomeScreen';
 import CommunitiesScreen from './screens/CommunitiesScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import ChatGlobal from './ChatGlobal'; 
+
+// Novo Componente de Navegação
 import TabBar from './components/nav/TabBar';
 
 function App() {
@@ -13,8 +16,8 @@ function App() {
 
   return (
     <Router>
-      {/* O AppContainer FORÇA a altura total da tela e impede que ela encolha */}
-      <AppContainer>
+      {/* AQUI ESTAVA O ERRO, AGORA CORRIGIDO PARA USAR AppLayout */}
+      <AppLayout>
         <ContentArea>
           <Routes>
             <Route path="/" element={<HomeScreen />} />
@@ -24,31 +27,26 @@ function App() {
             <Route path="*" element={<HomeScreen />} />
           </Routes>
         </ContentArea>
-        {/* A TabBar fica FORA da área de rolagem */}
         <TabBar />
-      </AppContainer>
+      </AppLayout>
     </Router>
   );
 }
 
+// ESTILOS CORRIGIDOS
 const AppLayout = styled.div`
   display: flex;
   flex-direction: column;
   height: 100vh;
   width: 100vw;
   background-color: #36393f;
-  /* Garante que o conteúdo não saia da tela */
   overflow: hidden; 
 `;
 
 const ContentArea = styled.main`
   flex-grow: 1;
-  /* A rolagem agora é controlada aqui */
   overflow-y: auto; 
-  /* Adicionamos padding para o conteúdo não colar nas bordas
-     e principalmente para não ficar atrás da TabBar */
-  padding: 20px;
-  padding-bottom: 80px; /* Espaço extra para a TabBar */
+  padding-bottom: 60px; 
 `;
 
 export default App;
