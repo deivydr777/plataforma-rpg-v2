@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
@@ -7,20 +7,39 @@ import CommunitiesScreen from './screens/CommunitiesScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import ChatGlobal from './ChatGlobal'; 
 import TabBar from './components/nav/TabBar';
-import CommunityViewScreen from './screens/CommunityViewScreen';
+import MainChatView from './screens/MainChatView';
+
+const defaultChannels = [
+    { id: 'geral', name: 'geral', type: 'text' },
+    { id: 'regras', name: 'regras', type: 'text' },
+];
 
 function App() {
   const currentUser = { id: 'user123', name: 'Aventureiro', avatar: 'https://via.placeholder.com/150' };
   
+  const [communities, setCommunities] = useState(() => {
+    const saved = localStorage.getItem('communities');
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  useEffect(() => {
+    localStorage.setItem('communities', JSON.stringify(communities));
+  }, [communities]);
+
+  const addCommunity = (community) => {
+    // Adiciona canais padrão a cada nova comunidade
+    const newCommunity = { ...community, channels: defaultChannels };
+    setCommunities(prev => [...prev, newCommunity]);
+  };
+
   return (
     <Router>
       <AppLayout>
         <ContentArea>
           <Routes>
             <Route path="/" element={<HomeScreen />} />
-            <Route path="/communities" element={<CommunitiesScreen />} />
-            {/* A rota da CommunityView não precisa mais receber props */}
-            <Route path="/community/:communityId" element={<CommunityViewScreen />} />
+            <Route path="/communities" element={<CommunitiesScreen communities={communities} addCommunity={addCommunity} />} />
+            <Route path="/community/:communityId/:channelId?" element={<MainChatView currentUser={currentUser} communities={communities} />} />
             <Route path="/profile" element={<ProfileScreen currentUser={currentUser} />} />
             <Route path="/global" element={<ChatGlobal currentUser={currentUser} />} />
             <Route path="*" element={<HomeScreen />} />
