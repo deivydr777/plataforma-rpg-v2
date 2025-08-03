@@ -31,30 +31,24 @@ function App() {
   );
 }
 
-// --- ESTILOS ANTI-QUEBRA ---
-
-const AppContainer = styled.div`
-  /* Ocupa 100% da altura da janela do navegador */
+const AppLayout = styled.div`
+  display: flex;
+  flex-direction: column;
   height: 100vh;
   width: 100vw;
   background-color: #36393f;
-  
-  /* Estrutura de coluna: conteúdo em cima, TabBar embaixo */
-  display: flex;
-  flex-direction: column;
-
-  /* Impede que o container encolha quando o teclado aparecer */
-  overflow: hidden;
+  /* Garante que o conteúdo não saia da tela */
+  overflow: hidden; 
 `;
 
 const ContentArea = styled.main`
-  /* Faz a área de conteúdo ocupar todo o espaço disponível */
-  flex: 1; 
-
-  /* ESSA É A MÁGICA: Apenas esta área pode rolar */
+  flex-grow: 1;
+  /* A rolagem agora é controlada aqui */
   overflow-y: auto; 
-  
-  /* O padding para a TabBar foi removido daqui e a TabBar agora fica por cima */
+  /* Adicionamos padding para o conteúdo não colar nas bordas
+     e principalmente para não ficar atrás da TabBar */
+  padding: 20px;
+  padding-bottom: 80px; /* Espaço extra para a TabBar */
 `;
 
 export default App;
