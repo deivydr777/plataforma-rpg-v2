@@ -15,7 +15,7 @@ function TabBar() {
       </TabItem>
       <TabItem to="/global">
         <Icon>🌍</Icon>
-        <Label>Chat Global</Label>
+        <Label>Global</Label>
       </TabItem>
       <TabItem to="/profile">
         <Icon>👤</Icon>
@@ -25,11 +25,14 @@ function TabBar() {
   );
 }
 
+// --- ESTILOS CORRIGIDOS E AUMENTADOS ---
+
 const TabBarContainer = styled.nav`
   display: flex;
   justify-content: space-around;
   align-items: center;
-  height: 60px;
+  /* Aumentamos a altura para dar mais espaço */
+  height: 65px; 
   background-color: #202225;
   border-top: 1px solid #000;
   position: fixed;
@@ -38,6 +41,7 @@ const TabBarContainer = styled.nav`
   right: 0;
   z-index: 1000;
 `;
+
 const TabItem = styled(NavLink)`
   display: flex;
   flex-direction: column;
@@ -47,18 +51,24 @@ const TabItem = styled(NavLink)`
   color: #8e9297;
   text-decoration: none;
   height: 100%;
+  padding: 5px 0; /* Adiciona um pouco de padding vertical */
 
   &.active {
-    color: #fff;
-    background-color: #36393f;
+    color: #ffffff; /* Cor branca para mais destaque */
+    background-color: #3d424a; /* Um fundo sutil para o item ativo */
   }
 `;
+
 const Icon = styled.span`
-  font-size: 24px;
+  /* Ícone significativamente maior */
+  font-size: 28px; 
 `;
+
 const Label = styled.span`
-  font-size: 10px;
-  margin-top: 2px;
+  /* Fonte maior e com mais peso */
+  font-size: 12px; 
+  font-weight: 500;
+  margin-top: 4px;
 `;
 
 export default TabBar;
