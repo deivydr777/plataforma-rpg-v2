@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom'; // REMOVIDO
 import { getAllCommunities, saveAllCommunities } from '../allCommunities';
 
 const generateInviteCode = () => {
@@ -13,7 +13,7 @@ function CommunitiesScreen() {
   const [myCommunities, setMyCommunities] = useState([]);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [newCommunityName, setNewCommunityName] = useState('');
-  const navigate = useNavigate();
+  // const navigate = useNavigate(); // REMOVIDO
 
   useEffect(() => {
     const stored = localStorage.getItem('worldweaver-my-communities');
@@ -30,15 +30,10 @@ function CommunitiesScreen() {
         name: trimmedName, 
         icon: '🏰',
         inviteCode: inviteCode,
-        channels: [{id: 'geral', name: 'geral'}, {id: 'anuncios', name: 'anuncios'}] // Canais padrão
+        channels: [{id: 'geral', name: 'geral'}, {id: 'anuncios', name: 'anuncios'}]
       };
-
-      // Salva na lista global
       saveAllCommunities([...allCommunities, newCommunity]);
-      
-      // Salva na lista pessoal do usuário
       setMyCommunities([...myCommunities, newCommunity]);
-      
       alert(`Comunidade "${trimmedName}" criada!\n\nSeu código de convite é: ${inviteCode}`);
       setNewCommunityName('');
       setShowCreateForm(false);
@@ -61,7 +56,6 @@ function CommunitiesScreen() {
       {myCommunities.length > 0 ? (
         <CommunityList>
           {myCommunities.map(community => (
-            // AQUI ESTÁ O LINK PARA ENTRAR NA COMUNIDADE (ainda não funciona, mas está pronto)
             <CommunityItem key={community.id} onClick={() => alert(`Clicou em ${community.name}`)}>
               <CommunityIcon>{community.icon}</CommunityIcon>
               <CommunityName>{community.name}</CommunityName>
@@ -78,7 +72,7 @@ function CommunitiesScreen() {
   );
 }
 
-// Estilos (sem alteração)
+// Estilos
 const ScreenContainer = styled.div`padding: 20px; color: #dcddde;`;
 const Header = styled.header`display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background-color: #36393f; top: 0; padding: 10px 0; border-bottom: 1px solid #2f3136; position: sticky; z-index: 10; h1 { margin: 0; font-size: 1.6em; }`;
 const CreateButton = styled.button`background-color: #5865f2; color: white; border: none; border-radius: 50%; width: 44px; height: 44px; font-size: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; line-height: 1;`;
