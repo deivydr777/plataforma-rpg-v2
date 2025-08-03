@@ -5,14 +5,13 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import HomeScreen from './screens/HomeScreen';
 import CommunitiesScreen from './screens/CommunitiesScreen';
 import CommunityViewScreen from './screens/CommunityViewScreen';
+import ChatCommunityScreen from './screens/ChatCommunityScreen'; // Importar a nova tela
 import ProfileScreen from './screens/ProfileScreen';
 import ChatGlobal from './ChatGlobal'; 
 import TabBar from './components/nav/TabBar';
 
 function App() {
   const currentUser = { id: 'user123', name: 'Aventureiro', avatar: 'https://via.placeholder.com/150' };
-  
-  // O estado das comunidades agora vive aqui, no topo da aplicação.
   const [communities, setCommunities] = useState([]);
 
   return (
@@ -21,14 +20,10 @@ function App() {
         <ContentArea>
           <Routes>
             <Route path="/" element={<HomeScreen />} />
-            <Route 
-              path="/communities" 
-              element={<CommunitiesScreen communities={communities} setCommunities={setCommunities} />} 
-            />
-            <Route 
-              path="/community/:communityId" 
-              element={<CommunityViewScreen communities={communities} />} 
-            />
+            <Route path="/communities" element={<CommunitiesScreen communities={communities} setCommunities={setCommunities} />} />
+            <Route path="/community/:communityId" element={<CommunityViewScreen communities={communities} />} />
+            {/* A NOVA ROTA PARA O CHAT DA COMUNIDADE */}
+            <Route path="/community/:communityId/:channelId" element={<ChatCommunityScreen communities={communities} currentUser={currentUser} />} />
             <Route path="/profile" element={<ProfileScreen currentUser={currentUser} />} />
             <Route path="/global" element={<ChatGlobal currentUser={currentUser} />} />
             <Route path="*" element={<HomeScreen />} />
