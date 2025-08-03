@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
-import { useParams, useNavigate, useLocation } from 'react-router-dom';
+// AQUI ESTAVA O ERRO: 'useParams' foi removido porque não estava sendo usado.
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const defaultChannels = [
     { id: 'geral', name: 'geral', type: 'text' },
@@ -9,9 +10,8 @@ const defaultChannels = [
 
 function CommunityViewScreen() {
     const navigate = useNavigate();
-    const location = useLocation(); // Hook para pegar o state
+    const location = useLocation();
     
-    // Pega os dados da comunidade que foram passados durante a navegação
     const community = location.state?.community;
 
     if (!community) {
