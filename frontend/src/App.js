@@ -26,18 +26,22 @@ function App() {
     </Router>
   );
 }
-
 const AppLayout = styled.div`
-  height: 100vh;
-  width: 100vw;
-  background-color: #36393f;
   display: flex;
   flex-direction: column;
+  height: 100vh; /* Força a altura total da tela, como recomendado */
+  width: 100vw;
+  background-color: #36393f;
   overflow: hidden;
 `;
+
 const ContentArea = styled.main`
   flex-grow: 1;
-  overflow-y: auto;
-  padding-bottom: 70px; /* Espaço para a TabBar não cobrir o conteúdo */
+  /* Garante que a área de conteúdo seja flexível e ocupe o espaço */
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto; 
+  padding-bottom: 60px; /* Espaço para a TabBar */
 `;
+
 export default App;
