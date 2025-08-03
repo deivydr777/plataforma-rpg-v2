@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/plataforma-rpg-frontend/static/css/main.c3e7bfb8.css",
+    "main.js": "/plataforma-rpg-frontend/static/js/main.fec3b3f0.js",
+    "index.html": "/plataforma-rpg-frontend/index.html",
+    "main.c3e7bfb8.css.map": "/plataforma-rpg-frontend/static/css/main.c3e7bfb8.css.map",
+    "main.fec3b3f0.js.map": "/plataforma-rpg-frontend/static/js/main.fec3b3f0.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.c3e7bfb8.css",
+    "static/js/main.fec3b3f0.js"
+  ]
+}
