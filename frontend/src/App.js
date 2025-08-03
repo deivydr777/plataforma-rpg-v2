@@ -5,10 +5,9 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import HomeScreen from './screens/HomeScreen';
 import CommunitiesScreen from './screens/CommunitiesScreen';
 import CommunityViewScreen from './screens/CommunityViewScreen';
-// AQUI ESTÁ A CORREÇÃO: Importando o arquivo com o nome certo
 import MainChatView from './screens/MainChatView'; 
 import ProfileScreen from './screens/ProfileScreen';
-import ChatGlobal from './ChatGlobal'; 
+import ChatGlobal from './ChatGlobal'; // Caminho correto: a partir de 'src'
 import TabBar from './components/nav/TabBar';
 
 function App() {
@@ -23,7 +22,6 @@ function App() {
             <Route path="/" element={<HomeScreen />} />
             <Route path="/communities" element={<CommunitiesScreen communities={communities} setCommunities={setCommunities} />} />
             <Route path="/community/:communityId" element={<CommunityViewScreen communities={communities} />} />
-            {/* AQUI ESTÁ A CORREÇÃO: Usando o componente com o nome certo */}
             <Route path="/community/:communityId/:channelId" element={<MainChatView communities={communities} currentUser={currentUser} />} />
             <Route path="/profile" element={<ProfileScreen currentUser={currentUser} />} />
             <Route path="/global" element={<ChatGlobal currentUser={currentUser} />} />
