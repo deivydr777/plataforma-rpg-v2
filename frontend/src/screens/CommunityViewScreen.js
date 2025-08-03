@@ -11,14 +11,16 @@ function CommunityViewScreen({ communities }) {
     const { communityId } = useParams();
     const navigate = useNavigate();
     
-    // Encontra a comunidade na lista que veio do App.js
     const community = communities.find(c => c.id === communityId);
 
-    // Se a comunidade não for encontrada (acontece durante o carregamento inicial),
-    // mostra uma tela de "Carregando..." simples. Isso evita o crash.
     if (!community) {
         return <ScreenContainer><h1>Carregando...</h1></ScreenContainer>;
     }
+
+    // A FUNÇÃO DE CLIQUE AGORA NAVEGA DE VERDADE
+    const handleChannelClick = (channelId) => {
+        navigate(`/community/${communityId}/${channelId}`);
+    };
 
     return (
         <ScreenContainer>
@@ -30,7 +32,7 @@ function CommunityViewScreen({ communities }) {
             <ChannelList>
                 <ChannelCategory>CANAIS DE TEXTO</ChannelCategory>
                 {defaultChannels.map(channel => (
-                    <ChannelItem key={channel.id}>
+                    <ChannelItem key={channel.id} onClick={() => handleChannelClick(channel.id)}>
                         <span>#</span> {channel.name}
                     </ChannelItem>
                 ))}
@@ -39,7 +41,7 @@ function CommunityViewScreen({ communities }) {
     );
 }
 
-// Estilos
+// Estilos (sem alterações)
 const ScreenContainer = styled.div`padding: 20px; color: #dcddde;`;
 const Header = styled.header`display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; h1 { margin: 0; font-size: 1.6em; }`;
 const BackButton = styled.button`background: none; border: none; color: #fff; font-size: 24px; cursor: pointer;`;
