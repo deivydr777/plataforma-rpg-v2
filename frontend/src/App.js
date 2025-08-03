@@ -1,22 +1,16 @@
 import React from 'react';
 import styled from 'styled-components';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-
-// Novas Telas
 import HomeScreen from './screens/HomeScreen';
 import CommunitiesScreen from './screens/CommunitiesScreen';
 import ProfileScreen from './screens/ProfileScreen';
-import ChatGlobal from './ChatGlobal'; 
-
-// Novo Componente de Navegação
+import ChatGlobal from './ChatGlobal';
 import TabBar from './components/nav/TabBar';
 
 function App() {
   const currentUser = { id: 'user123', name: 'Aventureiro', avatar: 'https://via.placeholder.com/150' };
-
   return (
     <Router>
-      {/* AQUI ESTAVA O ERRO, AGORA CORRIGIDO PARA USAR AppLayout */}
       <AppLayout>
         <ContentArea>
           <Routes>
@@ -33,20 +27,17 @@ function App() {
   );
 }
 
-// ESTILOS CORRIGIDOS
 const AppLayout = styled.div`
-  display: flex;
-  flex-direction: column;
   height: 100vh;
   width: 100vw;
   background-color: #36393f;
-  overflow: hidden; 
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 `;
-
 const ContentArea = styled.main`
   flex-grow: 1;
-  overflow-y: auto; 
-  padding-bottom: 60px; 
+  overflow-y: auto;
+  padding-bottom: 70px; /* Espaço para a TabBar não cobrir o conteúdo */
 `;
-
 export default App;
