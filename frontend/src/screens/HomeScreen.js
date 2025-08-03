@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react'; // useEffect foi removido daqui
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
-import { getAllCommunities } from '../allCommunities'; // Importa nosso "banco de dados"
+import { getAllCommunities } from '../allCommunities';
 
 function HomeScreen() {
   const navigate = useNavigate();
@@ -15,26 +15,22 @@ function HomeScreen() {
     const communityToJoin = allCommunities.find(c => c.inviteCode === code);
 
     if (communityToJoin) {
-      // Pega as comunidades atuais do usuário
       const myCommunitiesRaw = localStorage.getItem('worldweaver-my-communities');
       const myCommunities = myCommunitiesRaw ? JSON.parse(myCommunitiesRaw) : [];
       
-      // Verifica se o usuário já está na comunidade
       if (myCommunities.some(c => c.id === communityToJoin.id)) {
         alert('Você já faz parte desta comunidade!');
       } else {
-        // Adiciona a nova comunidade à lista do usuário
         const updatedMyCommunities = [...myCommunities, communityToJoin];
         localStorage.setItem('worldweaver-my-communities', JSON.stringify(updatedMyCommunities));
         alert(`Você entrou na comunidade: ${communityToJoin.name}!`);
-        navigate('/communities'); // Leva o usuário para a lista de comunidades
+        navigate('/communities');
       }
     } else {
       alert('Código de convite inválido.');
     }
     setInviteCode('');
   };
-
 
   return (
     <LobbyContainer>
@@ -50,11 +46,10 @@ function HomeScreen() {
           <CardDescription>Veja os avisos da plataforma e converse com outros jogadores.</CardDescription>
         </ActionCard>
 
-        {/* Formulário de convite agora é funcional */}
         <ActionCard>
           <CardIcon>🔗</CardIcon>
           <CardTitle>Entrar em uma Comunidade</CardTitle>
-          <CardDescription>Recebeu um convite? Cole o link abaixo para se juntar a uma comunidade existente.</CardDescription>
+          <CardDescription>Recebeu um convite? Cole o código abaixo para se juntar a uma comunidade.</CardDescription>
           <Input 
             placeholder="Cole o código de convite..." 
             value={inviteCode}
@@ -66,14 +61,14 @@ function HomeScreen() {
         <ActionCard onClick={() => navigate('/communities')}>
           <CardIcon>🏰</CardIcon>
           <CardTitle>Criar ou Ver Comunidades</CardTitle>
-          <CardDescription>Veja as comunidades que você participa ou crie uma nova aventura para seus amigos.</CardDescription>
+          <CardDescription>Veja as comunidades que você participa ou crie uma nova aventura para seus amigos.</Card-description>
         </ActionCard>
       </CardsContainer>
     </LobbyContainer>
   );
 }
 
-// Estilos (sem alteração)
+// Estilos
 const LobbyContainer = styled.div`padding: 30px 20px; color: #dcddde;`;
 const Header = styled.div`text-align: center; margin-bottom: 40px;`;
 const Title = styled.h1`font-size: 2em; margin-bottom: 10px; color: #fff;`;
