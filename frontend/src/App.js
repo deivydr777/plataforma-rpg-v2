@@ -1,36 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 import HomeScreen from './screens/HomeScreen';
 import CommunitiesScreen from './screens/CommunitiesScreen';
+import CommunityViewScreen from './screens/CommunityViewScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import ChatGlobal from './ChatGlobal'; 
 import TabBar from './components/nav/TabBar';
-import MainChatView from './screens/MainChatView';
-
-const defaultChannels = [
-    { id: 'geral', name: 'geral', type: 'text' },
-    { id: 'regras', name: 'regras', type: 'text' },
-];
 
 function App() {
   const currentUser = { id: 'user123', name: 'Aventureiro', avatar: 'https://via.placeholder.com/150' };
   
-  const [communities, setCommunities] = useState(() => {
-    const saved = localStorage.getItem('communities');
-    return saved ? JSON.parse(saved) : [];
-  });
-
-  useEffect(() => {
-    localStorage.setItem('communities', JSON.stringify(communities));
-  }, [communities]);
-
-  const addCommunity = (community) => {
-    // Adiciona canais padrão a cada nova comunidade
-    const newCommunity = { ...community, channels: defaultChannels };
-    setCommunities(prev => [...prev, newCommunity]);
-  };
+  // O estado das comunidades agora vive aqui, no topo da aplicação.
+  const [communities, setCommunities] = useState([]);
 
   return (
     <Router>
@@ -38,8 +21,14 @@ function App() {
         <ContentArea>
           <Routes>
             <Route path="/" element={<HomeScreen />} />
-            <Route path="/communities" element={<CommunitiesScreen communities={communities} addCommunity={addCommunity} />} />
-            <Route path="/community/:communityId/:channelId?" element={<MainChatView currentUser={currentUser} communities={communities} />} />
+            <Route 
+              path="/communities" 
+              element={<CommunitiesScreen communities={communities} setCommunities={setCommunities} />} 
+            />
+            <Route 
+              path="/community/:communityId" 
+              element={<CommunityViewScreen communities={communities} />} 
+            />
             <Route path="/profile" element={<ProfileScreen currentUser={currentUser} />} />
             <Route path="/global" element={<ChatGlobal currentUser={currentUser} />} />
             <Route path="*" element={<HomeScreen />} />
@@ -51,7 +40,7 @@ function App() {
   );
 }
 
+// Estilos
 const AppLayout = styled.div`display: flex; flex-direction: column; height: 100vh; width: 100vw; background-color: #36393f; overflow: hidden;`;
-const ContentArea = styled.main`flex-grow: 1; overflow-y: auto; padding-bottom: 70px;`;
-
+const ContentArea = styled.main`flex-grow: 1; overflow-y: auto; padding-bottom: 60px;`;
 export default App;
