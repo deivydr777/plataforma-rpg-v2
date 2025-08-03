@@ -61,7 +61,7 @@ function HomeScreen() {
         <ActionCard onClick={() => navigate('/communities')}>
           <CardIcon>🏰</CardIcon>
           <CardTitle>Criar ou Ver Comunidades</CardTitle>
-          <CardDescription>Veja as comunidades que você participa ou crie uma nova aventura para seus amigos.</Card-description>
+          <CardDescription>Veja as comunidades que você participa ou crie uma nova aventura para seus amigos.</CardDescription>
         </ActionCard>
       </CardsContainer>
     </LobbyContainer>
