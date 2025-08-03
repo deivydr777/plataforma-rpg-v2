@@ -18,10 +18,15 @@ export const initialAllCommunities = [
     },
 ];
 
-// Funções para manipular esta lista no localStorage
+// Funções para manipular esta lista "global" no localStorage
 export const getAllCommunities = () => {
     const communities = localStorage.getItem('worldweaver-all-communities');
-    return communities ? JSON.parse(communities) : initialAllCommunities;
+    // Se não houver nada salvo, salva a lista inicial
+    if (!communities) {
+        localStorage.setItem('worldweaver-all-communities', JSON.stringify(initialAllCommunities));
+        return initialAllCommunities;
+    }
+    return JSON.parse(communities);
 };
 
 export const saveAllCommunities = (communities) => {
