@@ -1,30 +1,33 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 
 const generateInviteCode = () => {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  let code = '';
-  for (let i = 0; i < 6; i++) {
-    code += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'; let code = '';
+  for (let i = 0; i < 6; i++) { code += chars.charAt(Math.floor(Math.random() * chars.length)); }
   return code.match(/.{1,3}/g).join('-');
 };
 
-// Este componente agora recebe 'communities' e 'setCommunities' como props
-function CommunitiesScreen({ communities, setCommunities }) {
+function CommunitiesScreen() {
+  // O estado agora é LOCAL. Usamos localStorage para salvar as comunidades no navegador.
+  const [communities, setCommunities] = useState(() => {
+    const savedCommunities = localStorage.getItem('communities');
+    return savedCommunities ? JSON.parse(savedCommunities) : [];
+  });
+
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [newCommunityName, setNewCommunityName] = useState('');
   const navigate = useNavigate();
 
+  // Salva as comunidades no localStorage sempre que elas mudam.
+  useEffect(() => {
+    localStorage.setItem('communities', JSON.stringify(communities));
+  }, [communities]);
+
   const handleCreateCommunity = () => {
     const trimmedName = newCommunityName.trim();
     if (trimmedName) {
-      const newCommunity = {
-        id: Date.now().toString(),
-        name: trimmedName,
-        icon: '⚔️', // Ícone padrão para novas guildas
-      };
+      const newCommunity = { id: Date.now().toString(), name: trimmedName, icon: '⚔️' };
       setCommunities([...communities, newCommunity]);
       const inviteCode = generateInviteCode();
       alert(`Comunidade "${trimmedName}" criada!\n\nSeu código de convite é: ${inviteCode}`);
@@ -33,8 +36,9 @@ function CommunitiesScreen({ communities, setCommunities }) {
     }
   };
 
-  const handleCommunityClick = (communityId) => {
-    navigate(`/community/${communityId}`);
+  const handleCommunityClick = (community) => {
+    // Passamos os dados da comunidade pela URL (state) para a próxima tela.
+    navigate(`/community/${community.id}`, { state: { community } });
   };
 
   return (
@@ -43,7 +47,6 @@ function CommunitiesScreen({ communities, setCommunities }) {
         <h1>Suas Comunidades</h1>
         <CreateButton onClick={() => setShowCreateForm(!showCreateForm)}>{showCreateForm ? '×' : '+'}</CreateButton>
       </Header>
-
       {showCreateForm && (
         <CreateForm>
           <h2>Criar Nova Comunidade</h2>
@@ -51,11 +54,10 @@ function CommunitiesScreen({ communities, setCommunities }) {
           <Button onClick={handleCreateCommunity}>Confirmar Criação</Button>
         </CreateForm>
       )}
-
       {communities.length > 0 ? (
         <CommunityList>
           {communities.map(community => (
-            <CommunityItem key={community.id} onClick={() => handleCommunityClick(community.id)}>
+            <CommunityItem key={community.id} onClick={() => handleCommunityClick(community)}>
               <CommunityIcon>{community.icon}</CommunityIcon>
               <CommunityName>{community.name}</CommunityName>
             </CommunityItem>
@@ -71,6 +73,7 @@ function CommunitiesScreen({ communities, setCommunities }) {
   );
 }
 
+// Estilos (sem mudanças)
 const ScreenContainer = styled.div`padding: 20px; color: #dcddde;`;
 const Header = styled.header`display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background-color: #36393f; padding-bottom: 10px; border-bottom: 1px solid #2f3136; position: sticky; top: -20px; z-index: 10; h1 { margin: 0; font-size: 1.6em; }`;
 const CreateButton = styled.button`background-color: #5865f2; color: white; border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; line-height: 1;`;
