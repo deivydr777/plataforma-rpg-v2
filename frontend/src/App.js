@@ -1,18 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
-// Vamos importar todos os nossos componentes aqui
+import HomeScreen from './screens/HomeScreen';
 import CommunitiesScreen from './screens/CommunitiesScreen';
+import ProfileScreen from './screens/ProfileScreen';
+import ChatGlobal from './ChatGlobal'; 
+import TabBar from './components/nav/TabBar';
 import MainChatView from './screens/MainChatView';
-// Remova a TabBar por enquanto, ela depende do Router
-// import TabBar from './components/nav/TabBar'; 
+
+const defaultChannels = [
+    { id: 'geral', name: 'geral', type: 'text' },
+    { id: 'regras', name: 'regras', type: 'text' },
+];
 
 function App() {
   const currentUser = { id: 'user123', name: 'Aventureiro', avatar: 'https://via.placeholder.com/150' };
-
-  // O estado que controla TUDO
-  const [currentView, setCurrentView] = useState('communities'); // 'communities' ou 'chat'
-  const [activeCommunity, setActiveCommunity] = useState(null);
   
   const [communities, setCommunities] = useState(() => {
     const saved = localStorage.getItem('communities');
@@ -24,43 +27,31 @@ function App() {
   }, [communities]);
 
   const addCommunity = (community) => {
-    const newCommunity = { ...community, channels: [{ id: 'geral', name: 'geral', type: 'text' }] };
+    // Adiciona canais padrão a cada nova comunidade
+    const newCommunity = { ...community, channels: defaultChannels };
     setCommunities(prev => [...prev, newCommunity]);
   };
 
-  // Funções para controlar a navegação
-  const goToChat = (community) => {
-    setActiveCommunity(community);
-    setCurrentView('chat');
-  };
-
-  const goToCommunities = () => {
-    setActiveCommunity(null);
-    setCurrentView('communities');
-  };
-
-  // Renderiza a tela correta com base no estado
-  const renderContent = () => {
-    if (currentView === 'chat' && activeCommunity) {
-      return <MainChatView currentUser={currentUser} community={activeCommunity} onBack={goToCommunities} />;
-    }
-    // Por padrão, mostra a lista de comunidades
-    return <CommunitiesScreen communities={communities} addCommunity={addCommunity} onCommunityClick={goToChat} />;
-  };
-
   return (
-    <AppLayout>
-      {renderContent()}
-    </AppLayout>
+    <Router>
+      <AppLayout>
+        <ContentArea>
+          <Routes>
+            <Route path="/" element={<HomeScreen />} />
+            <Route path="/communities" element={<CommunitiesScreen communities={communities} addCommunity={addCommunity} />} />
+            <Route path="/community/:communityId/:channelId?" element={<MainChatView currentUser={currentUser} communities={communities} />} />
+            <Route path="/profile" element={<ProfileScreen currentUser={currentUser} />} />
+            <Route path="/global" element={<ChatGlobal currentUser={currentUser} />} />
+            <Route path="*" element={<HomeScreen />} />
+          </Routes>
+        </ContentArea>
+        <TabBar />
+      </AppLayout>
+    </Router>
   );
 }
 
-// Estilos
-const AppLayout = styled.div`
-  height: 100vh;
-  width: 100vw;
-  background-color: #36393f;
-  overflow: hidden;
-`;
+const AppLayout = styled.div`display: flex; flex-direction: column; height: 100vh; width: 100vw; background-color: #36393f; overflow: hidden;`;
+const ContentArea = styled.main`flex-grow: 1; overflow-y: auto; padding-bottom: 70px;`;
 
 export default App;
