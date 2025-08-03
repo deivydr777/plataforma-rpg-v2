@@ -73,26 +73,135 @@ function ChatGlobal({ currentUser }) {
     </PageContainer>
   );
 }
-const PageContainer = styled.div`display: flex; flex-direction: column; height: 100%;`;
-const Header = styled.header`padding: 20px; flex-shrink: 0; h1 { margin: 0; font-size: 1.6em; color: #fff; }`;
-const PostCard = styled.div`background-color: #2f3136; margin: 0 20px; border-radius: 8px; flex-shrink: 0;`;
-const PostHeader = styled.div`padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; background-color: #292b2f;`;
-const AuthorInfo = styled.div`display: flex; align-items: center; gap: 10px;`;
-const Avatar = styled.img`width: 32px; height: 32px; border-radius: 50%;`;
-const AuthorName = styled.span`font-weight: bold; color: #fff;`;
-const PostDate = styled.span`font-size: 0.8em; color: #8e9297;`;
-const PostContent = styled.div`padding: 15px;`;
-const PostTitle = styled.h3`font-size: 1.1em; margin: 0 0 10px 0; color: #fff;`;
-const PostText = styled.p`margin: 0; font-size: 0.95em; line-height: 1.6; color: #dcddde;`;
-const ChatLiveHeader = styled.div`padding: 15px 20px; margin-top: 20px; background-color: #2f3136; border-top: 1px solid #202225; border-bottom: 1px solid #202225; h3 { margin: 0; color: #fff; font-size: 1em; text-transform: uppercase; }`;
-const ChatMessages = styled.div`flex-grow: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px;`;
-const Message = styled.div`display: flex; align-items: flex-start; gap: 10px; ${props => props.self && `justify-content: flex-end;`}`;
-const MessageContent = styled.div`background-color: ${props => props.self ? '#5865f2' : '#40444b'}; color: #fff; padding: 10px 15px; border-radius: 8px; max-width: 80%;`;
-const MessageAuthor = styled.div`font-weight: bold; margin-bottom: 5px; color: ${props => props.self ? '#fff' : '#5865f2'};`;
-const MessageText = styled.p`margin: 0; font-size: 0.95em; line-height: 1.4;`;
-const SystemMessage = styled.div`text-align: center; color: #8e9297; font-style: italic; font-size: 0.9em;`;
-const ActionMessage = styled.div`color: #b9bbbe; font-style: italic;`;
-const ChatInputArea = styled.div`padding: 15px 20px; border-top: 1px solid #202225; display: flex; gap: 10px; flex-shrink: 0; background-color: #2f3136;`;
-const Input = styled.input`flex-grow: 1; padding: 10px 15px; border-radius: 8px; border: none; background-color: #40444b; color: #dcddde;`;
-const SendButton = styled.button`padding: 10px 20px; border-radius: 8px; border: none; background-color: #5865f2; color: white; cursor: pointer;`;
+const PageContainer = styled.div`
+  display: flex; 
+  flex-direction: column; 
+  /* Usa flex-grow para ocupar o espaço disponível no ContentArea do App.js */
+  flex-grow: 1; 
+  min-height: 0; /* Correção importante para flexbox em containers com scroll */
+`;
+const Header = styled.header`
+  padding: 20px; 
+  flex-shrink: 0; 
+  h1 { margin: 0; font-size: 1.6em; color: #fff; }
+`;
+const PostCard = styled.div`
+  background-color: #2f3136; 
+  margin: 0 20px; 
+  border-radius: 8px; 
+  flex-shrink: 0;
+`;
+const PostHeader = styled.div`
+  padding: 10px 15px; 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  background-color: #292b2f;
+`;
+const AuthorInfo = styled.div`
+  display: flex; 
+  align-items: center; 
+  gap: 10px;
+`;
+const Avatar = styled.img`
+  width: 32px; 
+  height: 32px; 
+  border-radius: 50%;
+`;
+const AuthorName = styled.span`
+  font-weight: bold; 
+  color: #fff;
+`;
+const PostDate = styled.span`
+  font-size: 0.8em; 
+  color: #8e9297;
+`;
+const PostContent = styled.div`
+  padding: 15px;
+`;
+const PostTitle = styled.h3`
+  font-size: 1.1em; 
+  margin: 0 0 10px 0; 
+  color: #fff;
+`;
+const PostText = styled.p`
+  margin: 0; 
+  font-size: 0.95em; 
+  line-height: 1.6; 
+  color: #dcddde;
+`;
+const ChatLiveHeader = styled.div`
+  padding: 15px 20px; 
+  margin-top: 20px; 
+  background-color: #2f3136; 
+  border-top: 1px solid #202225; 
+  border-bottom: 1px solid #202225; 
+  h3 { margin: 0; color: #fff; font-size: 1em; text-transform: uppercase; }
+`;
+const ChatMessages = styled.div`
+  flex-grow: 1; /* Permite que a área de mensagens cresça */
+  min-height: 100px; /* Garante uma altura mínima, como recomendado */
+  padding: 20px; 
+  overflow-y: auto; 
+  display: flex; 
+  flex-direction: column; 
+  gap: 15px;
+`;
+const Message = styled.div`
+  display: flex; 
+  align-items: flex-start; 
+  gap: 10px; 
+  ${props => props.self && `justify-content: flex-end;`}
+`;
+const MessageContent = styled.div`
+  background-color: ${props => props.self ? '#5865f2' : '#40444b'}; 
+  color: #fff; 
+  padding: 10px 15px; 
+  border-radius: 8px; 
+  max-width: 80%;
+`;
+const MessageAuthor = styled.div`
+  font-weight: bold; 
+  margin-bottom: 5px; 
+  color: ${props => props.self ? '#fff' : '#5865f2'};
+`;
+const MessageText = styled.p`
+  margin: 0; 
+  font-size: 0.95em; 
+  line-height: 1.4;
+`;
+const SystemMessage = styled.div`
+  text-align: center; 
+  color: #8e9297; 
+  font-style: italic; 
+  font-size: 0.9em;
+`;
+const ActionMessage = styled.div`
+  color: #b9bbbe; 
+  font-style: italic;
+`;
+const ChatInputArea = styled.div`
+  padding: 15px 20px; 
+  border-top: 1px solid #202225; 
+  display: flex; 
+  gap: 10px; 
+  flex-shrink: 0; 
+  background-color: #2f3136;
+`;
+const Input = styled.input`
+  flex-grow: 1; 
+  padding: 10px 15px; 
+  border-radius: 8px; 
+  border: none; 
+  background-color: #40444b; 
+  color: #dcddde;
+`;
+const SendButton = styled.button`
+  padding: 10px 20px; 
+  border-radius: 8px; 
+  border: none; 
+  background-color: #5865f2; 
+  color: white; 
+  cursor: pointer;
+`;
 export default ChatGlobal;
