@@ -2,13 +2,13 @@ import React from 'react';
 import styled from 'styled-components';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
-// Novas Telas
+// Caminhos de importação corrigidos para a nova estrutura
 import HomeScreen from './screens/HomeScreen';
 import CommunitiesScreen from './screens/CommunitiesScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import ChatGlobal from './ChatGlobal'; 
 
-// Novo Componente de Navegação
+// Caminho de importação corrigido para a TabBar
 import TabBar from './components/nav/TabBar';
 
 function App() {
@@ -23,6 +23,7 @@ function App() {
             <Route path="/communities" element={<CommunitiesScreen />} />
             <Route path="/profile" element={<ProfileScreen currentUser={currentUser} />} />
             <Route path="/global" element={<ChatGlobal currentUser={currentUser} />} />
+            {/* Rota de fallback para a página inicial */}
             <Route path="*" element={<HomeScreen />} />
           </Routes>
         </ContentArea>
@@ -32,6 +33,7 @@ function App() {
   );
 }
 
+// Estilos
 const AppLayout = styled.div`
   display: flex;
   flex-direction: column;
@@ -44,7 +46,7 @@ const AppLayout = styled.div`
 const ContentArea = styled.main`
   flex-grow: 1;
   overflow-y: auto; 
-  padding-bottom: 60px; 
+  padding-bottom: 60px; /* Espaço para a TabBar não cobrir o conteúdo */
 `;
 
 export default App;
