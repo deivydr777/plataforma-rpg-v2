@@ -5,7 +5,6 @@ import { io } from 'socket.io-client';
 
 const SOCKET_SERVER_URL = "https://plataforma-rpg-v2.onrender.com";
 
-// Função para buscar dados da comunidade (simulado)
 const getCommunityData = (id, communities) => {
     return communities.find(c => c.id === id);
 };
@@ -22,7 +21,6 @@ function MainChatView({ currentUser, communities }) {
     const socketRef = useRef(null);
     const messagesEndRef = useRef(null);
 
-    // Redireciona para o primeiro canal se nenhum for especificado
     useEffect(() => {
         if (community && !channelId) {
             const firstTextChannel = community.channels.find(c => c.type === 'text');
@@ -32,11 +30,9 @@ function MainChatView({ currentUser, communities }) {
         }
     }, [community, channelId, navigate]);
 
-    // Conecta ao socket do canal
     useEffect(() => {
         if (!communityId || !activeChannelId) return;
 
-        // Limpa mensagens ao trocar de canal
         setMessages([]);
 
         socketRef.current = io(SOCKET_SERVER_URL);
@@ -58,10 +54,24 @@ function MainChatView({ currentUser, communities }) {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messages]);
 
-    const handleSendMessage = () => { /* Implementar lógica de envio */ };
+    // LÓGICA DE ENVIO DE MENSAGEM CORRIGIDA
+    const handleSendMessage = () => {
+        const trimmedMessage = inputMessage.trim();
+        if (trimmedMessage && socketRef.current) {
+            const messageData = {
+                sala: `${communityId}-${activeChannelId}`,
+                remetente: currentUser.name,
+                avatar: currentUser.avatar,
+                texto: trimmedMessage,
+                timestamp: new Date().toISOString(),
+            };
+            socketRef.current.emit('enviar_mensagem', messageData);
+            setInputMessage('');
+        }
+    };
 
     if (!community) {
-        return <LoadingScreen>Carregando...</LoadingScreen>;
+        return <LoadingScreen>Carregando comunidade...</LoadingScreen>;
     }
 
     return (
@@ -82,6 +92,12 @@ function MainChatView({ currentUser, communities }) {
                             # {ch.name}
                         </ChannelItem>
                     ))}
+                     <ChannelCategory>Canais de Voz</ChannelCategory>
+                    {community.channels.filter(c => c.type === 'voice').map(ch => (
+                        <ChannelItem key={ch.id}>
+                            🔊 {ch.name}
+                        </ChannelItem>
+                    ))}
                 </ChannelList>
             </ChannelsSidebar>
             <ChatContainer>
@@ -90,17 +106,27 @@ function MainChatView({ currentUser, communities }) {
                     <h2># {activeChannelId}</h2>
                 </ChatHeader>
                 <ChatMessages>
-                    {/* Mensagens irão aqui */}
+                    {messages.map((msg, index) => (
+                         <div key={index}>{/* Lógica de exibição de mensagem aqui */}</div>
+                    ))}
                     <div ref={messagesEndRef} />
                 </ChatMessages>
                 <ChatInputArea>
-                    <Input placeholder={`Conversar em #${activeChannelId}`} value={inputMessage} onChange={(e) => setInputMessage(e.target.value)} />
+                    {/* CONECTAMOS AS FUNÇÕES AQUI */}
+                    <Input 
+                        placeholder={`Conversar em #${activeChannelId}`} 
+                        value={inputMessage} 
+                        onChange={(e) => setInputMessage(e.target.value)} 
+                        onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                    />
+                    <SendButton onClick={handleSendMessage}>Enviar</SendButton>
                 </ChatInputArea>
             </ChatContainer>
         </Layout>
     );
 }
 
+// Estilos
 const Layout = styled.div`display: flex; height: 100%; width: 100%;`;
 const ChannelsSidebar = styled.div`width: 240px; background-color: #2f3136; flex-shrink: 0; display: flex; flex-direction: column;`;
 const CommunityHeader = styled.div`padding: 20px; font-size: 1.2em; font-weight: bold; color: #fff; border-bottom: 1px solid #202225;`;
@@ -111,8 +137,9 @@ const ChatContainer = styled.div`flex-grow: 1; display: flex; flex-direction: co
 const ChatHeader = styled.div`padding: 0 20px; height: 60px; display: flex; align-items: center; border-bottom: 1px solid #2f3136; color: #fff; h2 { margin: 0; font-size: 1.2em; }`;
 const BackButton = styled.button`background: none; border: none; color: #fff; font-size: 24px; cursor: pointer; margin-right: 15px;`;
 const ChatMessages = styled.div`flex-grow: 1; padding: 20px; overflow-y: auto;`;
-const ChatInputArea = styled.div`padding: 20px;`;
-const Input = styled.input`width: 100%; padding: 12px; border: none; border-radius: 8px; background-color: #40444b; color: #dcddde;`;
+const ChatInputArea = styled.div`padding: 20px; display: flex; gap: 10px;`;
+const Input = styled.input`flex-grow: 1; padding: 12px; border: none; border-radius: 8px; background-color: #40444b; color: #dcddde;`;
+const SendButton = styled.button`padding: 0 20px; border: none; border-radius: 8px; background-color: #5865f2; color: #fff; cursor: pointer;`;
 const LoadingScreen = styled.div`display: flex; align-items: center; justify-content: center; height: 100%; color: #fff;`;
 
 export default MainChatView;
